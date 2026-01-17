@@ -1,0 +1,24 @@
+{
+  "name": "gherkinlang-js",
+  "version": "1.0.0",
+  "description": "GherkinLang compiler for JavaScript target",
+  "main": "src/index.js",
+  "bin": {
+    "gherkin": "./bin/gherkin.js"
+  },
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint src/**/*.js",
+    "format": "prettier --write \"**/*.{js,md,json}\""
+  },
+  "keywords": [
+    "gherkin",
+    "compiler",
+    "javascript",
+    "ai"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {}
+}

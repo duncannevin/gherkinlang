@@ -1,0 +1,36 @@
+{
+  "target": "javascript",
+  "moduleFormat": "commonjs",
+  "output": {
+    "dir": "dist",
+    "testDir": "test/generated",
+    "docsDir": "docs/generated"
+  },
+  "cache": {
+    "enabled": true,
+    "dir": ".gherkin-cache",
+    "maxSize": "100MB",
+    "ttl": "7d"
+  },
+  "validation": {
+    "syntax": true,
+    "purity": true,
+    "lint": true,
+    "lintConfig": ".eslintrc.js"
+  },
+  "ai": {
+    "model": "claude-3-opus-20240229",
+    "maxRetries": 3,
+    "timeout": 60000
+  },
+  "generation": {
+    "jsdoc": true,
+    "tests": true,
+    "docs": true,
+    "prettier": true
+  },
+  "watch": {
+    "debounce": 100,
+    "ignore": ["node_modules", "dist", ".gherkin-cache"]
+  }
+}
