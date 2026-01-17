@@ -1,0 +1,20 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+build/
+*.min.js
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Cache
+.gherkin-cache/
+
+# Generated files
+test/generated/
+
+# Logs
+*.log

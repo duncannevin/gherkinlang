@@ -24,11 +24,11 @@
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Create test directory structure: test/unit/compiler/ and test/integration/compiler/
-- [ ] T002 [P] Install production dependencies: glob (^10.x.x) in package.json
-- [ ] T003 [P] Install development dependencies: jest (^29.7.x) and fast-check (^3.15.x) in package.json
-- [ ] T004 [P] Configure Jest test framework in jest.config.js
-- [ ] T005 [P] Create .gherkin-cache directory structure documentation in README.md
+- [X] T001 Create test directory structure: test/unit/compiler/ and test/integration/compiler/
+- [X] T002 [P] Install production dependencies: glob (^10.x.x) in package.json
+- [X] T003 [P] Install development dependencies: jest (^29.7.x) and fast-check (^3.15.x) in package.json
+- [X] T004 [P] Configure Jest test framework in jest.config.js
+- [X] T005 [P] Create .gherkin-cache directory structure documentation in README.md
 
 ---
 
@@ -38,10 +38,10 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T006 Create error classes in src/compiler/errors.js for RulesLoadError, ParseError, ContextBuildError, CacheError
-- [ ] T007 [P] Create utility module for SHA256 hashing in src/compiler/utils/hash.js
-- [ ] T008 [P] Create utility module for file system operations in src/compiler/utils/fs.js
-- [ ] T009 Create base types/interfaces file in src/compiler/types.js for shared TypeScript-style type definitions
+- [X] T006 Create error classes in src/compiler/errors.js for RulesLoadError, ParseError, ContextBuildError, CacheError
+- [X] T007 [P] Create utility module for SHA256 hashing in src/compiler/utils/hash.js
+- [X] T008 [P] Create utility module for file system operations in src/compiler/utils/fs.js
+- [X] T009 Create base types/interfaces file in src/compiler/types.js for shared TypeScript-style type definitions
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 

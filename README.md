@@ -28,6 +28,23 @@ gherkin watch features/ -o dist
 gherkin init my-project --template library
 ```
 
+## Cache Directory
+
+The compiler uses a content-addressed cache stored in `.gherkin-cache/` directory:
+
+```
+.gherkin-cache/
+├── manifest.json          # Cache index with metadata
+└── *.cache                # Individual cache entry files (SHA256 keys)
+```
+
+Cache entries are stored as JSON files with compilation results. The cache uses LRU (Least Recently Used) eviction when the cache size exceeds the configured limit (default: 100MB).
+
+To clear the cache:
+```bash
+rm -rf .gherkin-cache/
+```
+
 ## Documentation
 
 See [architecture.md](./architecture.md) for detailed architecture documentation.
