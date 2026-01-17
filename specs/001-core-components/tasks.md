@@ -55,15 +55,15 @@
 
 ### Implementation for User Story 1
 
-- [ ] T010 [US1] Create RulesLoader class in src/ai/rules-loader.js with load() method
-- [ ] T011 [US1] Implement file reading logic in RulesLoader.load() to read rules.md from file path
-- [ ] T012 [US1] Implement SHA256 content hashing in RulesLoader.load() using crypto module
-- [ ] T013 [US1] Implement target-specific rule extraction in RulesLoader.load() to filter sections by target
-- [ ] T014 [US1] Implement in-memory caching in RulesLoader with getCached() method
-- [ ] T015 [US1] Implement hasChanged() method in RulesLoader to detect file modifications using fs.stat
-- [ ] T016 [US1] Add error handling in RulesLoader for missing files, unreadable files, and invalid targets
-- [ ] T017 [US1] Create LanguageRules type definition in src/compiler/types.js with content, target, contentHash, loadedAt, filePath fields
-- [ ] T018 [US1] Export RulesLoader from src/ai/transformer.js (or create separate export file)
+- [X] T010 [US1] Create RulesLoader class in src/ai/rules-loader.js with load() method
+- [X] T011 [US1] Implement file reading logic in RulesLoader.load() to read rules.md from file path
+- [X] T012 [US1] Implement SHA256 content hashing in RulesLoader.load() using crypto module
+- [X] T013 [US1] Implement target-specific rule extraction in RulesLoader.load() to filter sections by target
+- [X] T014 [US1] Implement in-memory caching in RulesLoader with getCached() method
+- [X] T015 [US1] Implement hasChanged() method in RulesLoader to detect file modifications using fs.stat
+- [X] T016 [US1] Add error handling in RulesLoader for missing files, unreadable files, and invalid targets
+- [X] T017 [US1] Create LanguageRules type definition in src/compiler/types.js with content, target, contentHash, loadedAt, filePath fields
+- [X] T018 [US1] Export RulesLoader from src/ai/transformer.js (or create separate export file)
 
 **Checkpoint**: At this point, User Story 1 should be fully functional. Can load rules.md, compute hash, and make rules available to AI transformer.
 
