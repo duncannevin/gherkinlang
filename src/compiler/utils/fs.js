@@ -121,7 +121,7 @@ async function rm(filePath) {
   try {
     const stats = await fs.stat(filePath);
     if (stats.isDirectory()) {
-      await fs.rmdir(filePath, { recursive: true });
+      await fs.rmdir(filePath);
     } else {
       await fs.unlink(filePath);
     }
@@ -141,18 +141,16 @@ async function rm(filePath) {
  * Find all files matching a pattern in a directory recursively.
  * 
  * @param {string} dirPath - Path to directory to search
- * @param {string} [pattern='*.feature'] - File pattern to match (default: '*.feature')
  * @returns {Promise<string[]>} Array of absolute file paths
  * @throws {Error} If directory cannot be accessed
  */
-async function findFiles(dirPath, pattern = '*.feature') {
+async function findFiles(dirPath) {
   const files = [];
-  const patternRegex = new RegExp('^' + pattern.replace(/\*/g, '.*').replace(/\./g, '\\.') + '$');
+  const patternRegex = new RegExp('.*\\.feature$');
   
   async function walk(currentPath) {
     try {
       const entries = await fs.readdir(currentPath, { withFileTypes: true });
-      
       for (const entry of entries) {
         const fullPath = path.join(currentPath, entry.name);
         

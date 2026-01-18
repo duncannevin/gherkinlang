@@ -86,11 +86,10 @@ class GherkinParser {
     /**
      * Parse all .feature files in a directory recursively.
      * @param {string} dirPath - Path to directory to search
-     * @param {string} [pattern='*.feature'] - File pattern to match (default: '*.feature')
      * @returns {Promise<Map<string, ParsedFeature>>} Map of file path to parsed feature
      */
-    async parseDirectory(dirPath, pattern = '*.feature') {
-        const filePaths = await findFiles(dirPath, pattern);
+    async parseDirectory(dirPath) {
+        const filePaths = await findFiles(dirPath);
         return await this.parseMany(filePaths);
     }
 
