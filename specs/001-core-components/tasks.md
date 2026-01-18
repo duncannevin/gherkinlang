@@ -77,17 +77,18 @@
 
 ### Implementation for User Story 2
 
-- [ ] T019 [US2] Create GherkinParser class in src/compiler/parser.js with parse() method
-- [ ] T020 [US2] Implement feature name extraction in GherkinParser.parse() to extract from "Feature:" line
-- [ ] T021 [US2] Implement scenario extraction in GherkinParser.parse() to find all "Scenario:" lines with names and line numbers
-- [ ] T022 [US2] Implement import detection in GherkinParser.parse() to find "Given import <moduleName>" statements
-- [ ] T023 [US2] Implement error collection in GherkinParser.parse() to track syntax, structure, and missing feature errors
-- [ ] T024 [US2] Implement line/column tracking in GherkinParser.parse() for accurate error reporting
-- [ ] T025 [US2] Implement parseMany() method in GherkinParser to parse multiple files and return Map
-- [ ] T026 [US2] Create ParsedFeature type definition in src/compiler/types.js with featureName, filePath, scenarios, imports, dependencies, errors, lineCount fields
-- [ ] T027 [US2] Create ScenarioInfo and ParseError nested types in src/compiler/types.js
-- [ ] T028 [US2] Add validation logic in GherkinParser.parse() to ensure featureName is valid identifier
-- [ ] T029 [US2] Export GherkinParser from src/compiler/parser.js
+- [X] T019 [US2] Create GherkinParser class in src/compiler/parser.js with parse() method
+- [X] T020 [US2] Implement feature name extraction in GherkinParser.parse() to extract from "Feature:" line
+- [X] T021 [US2] Implement scenario extraction in GherkinParser.parse() to find all "Scenario:" lines with names and line numbers
+- [X] T022 [US2] Implement import detection in GherkinParser.parse() to find "Given import <moduleName>" statements
+- [X] T023 [US2] Implement error collection in GherkinParser.parse() to track syntax, structure, and missing feature errors
+- [X] T024 [US2] Implement line/column tracking in GherkinParser.parse() for accurate error reporting
+- [X] T025 [US2] Implement parseMany() method in GherkinParser to parse multiple files and return Map
+- [X] T026 [US2] Create ParsedFeature type definition in src/compiler/types.js with featureName, filePath, scenarios, imports, dependencies, errors, lineCount fields
+- [X] T027 [US2] Create ScenarioInfo and ParseError nested types in src/compiler/types.js
+- [X] T028 [US2] Add validation logic in GherkinParser.parse() to ensure featureName is valid identifier
+- [X] T029 [US2] Export GherkinParser from src/compiler/parser.js
+- [X] T029.1 [US2] Write unit tests for the GherkinParser class
 
 **Checkpoint**: At this point, User Story 2 should be fully functional. Can parse .feature files and extract structure with error reporting.
 
