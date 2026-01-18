@@ -7,6 +7,8 @@
  * @module compiler/types
  */
 
+const { ParseError } = require('./errors');
+
 /**
  * @typedef {Object} LanguageRules
  * @property {string} content - Raw markdown content of rules.md
@@ -20,14 +22,6 @@
  * @typedef {Object} ScenarioInfo
  * @property {string} name - Scenario name
  * @property {number} lineNumber - Line number where scenario is defined (1-indexed)
- */
-
-/**
- * @typedef {Object} ParseError
- * @property {string} message - Error message
- * @property {number} line - Line number where error occurred (1-indexed)
- * @property {number} column - Column number where error occurred (1-indexed)
- * @property {'syntax'|'structure'|'missing_feature'} type - Type of parse error
  */
 
 /**

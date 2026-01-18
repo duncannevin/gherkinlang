@@ -137,6 +137,48 @@ async function rm(filePath) {
   }
 }
 
+/**
+ * Find all files matching a pattern in a directory recursively.
+ * 
+ * @param {string} dirPath - Path to directory to search
+ * @param {string} [pattern='*.feature'] - File pattern to match (default: '*.feature')
+ * @returns {Promise<string[]>} Array of absolute file paths
+ * @throws {Error} If directory cannot be accessed
+ */
+async function findFiles(dirPath, pattern = '*.feature') {
+  const files = [];
+  const patternRegex = new RegExp('^' + pattern.replace(/\*/g, '.*').replace(/\./g, '\\.') + '$');
+  
+  async function walk(currentPath) {
+    try {
+      const entries = await fs.readdir(currentPath, { withFileTypes: true });
+      
+      for (const entry of entries) {
+        const fullPath = path.join(currentPath, entry.name);
+        
+        if (entry.isDirectory()) {
+          await walk(fullPath);
+        } else if (entry.isFile() && patternRegex.test(entry.name)) {
+          files.push(fullPath);
+        }
+      }
+    } catch (error) {
+      if (error.code === 'EACCES') {
+        throw new Error(`Permission denied accessing directory: ${currentPath}`);
+      }
+      throw error;
+    }
+  }
+  
+  const stats = await fs.stat(dirPath);
+  if (!stats.isDirectory()) {
+    throw new Error(`Path is not a directory: ${dirPath}`);
+  }
+  
+  await walk(dirPath);
+  return files;
+}
+
 module.exports = {
   readFile,
   writeFile,
@@ -144,4 +186,5 @@ module.exports = {
   stat,
   mkdir,
   rm,
+  findFiles,
 };

@@ -40,6 +40,7 @@ class ParseError extends Error {
    * @param {string} [options.filePath] - Path to file that failed to parse
    * @param {number} [options.line] - Line number where error occurred
    * @param {number} [options.column] - Column number where error occurred
+   * @param {string} [options.type] - Type of parse error ('syntax' | 'structure' | 'missing_feature' | 'system')
    */
   constructor(message, options = {}) {
     super(message);

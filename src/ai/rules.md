@@ -17,6 +17,8 @@ Your job:
 ## Module Definition
 - Feature: declares a module
 - The word following "Feature:" is the module name
+- The first line of each file should always be the module name
+- Each file can only contain a single module
 - Example: "Feature: UserManagement" creates module UserManagement
 
 ## Function Definition
