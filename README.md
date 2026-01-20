@@ -260,6 +260,34 @@ Create `.gherkinrc.json` in project root:
 }
 ```
 
+## Environment Variables
+
+The AI transformation feature requires the following environment variables:
+
+### `API_KEY` (Required)
+
+Anthropic Claude API key for AI-powered compilation. This key is used to authenticate with the Claude API when transforming GherkinLang source code to JavaScript.
+
+**Example:**
+```bash
+export API_KEY="sk-ant-api03-..."
+```
+
+**Note:** The API key can also be set via `ANTHROPIC_API_KEY` environment variable (used by `@anthropic-ai/sdk` by default).
+
+### `MCP_SERVER_URL` (Optional)
+
+Path or command to the MCP (Model Context Protocol) server for tool-assisted compilation. If not provided, tool-assisted compilation features will be disabled.
+
+**Example:**
+```bash
+export MCP_SERVER_URL="node ./mcp-server.js"
+# or
+export MCP_SERVER_URL="/usr/local/bin/mcp-server"
+```
+
+**Note:** The MCP server should be a local process that communicates via stdin/stdout using JSON-RPC 2.0 protocol.
+
 ## Error Handling
 
 ### Rules Loading Errors
