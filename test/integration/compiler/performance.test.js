@@ -10,7 +10,7 @@
  * @module test/integration/compiler/performance
  */
 
-const { RulesLoader } = require('../../../src/ai/rules-loader');
+const { PromptBuilder } = require('../../../src/ai/prompt-builder');
 const { GherkinParser } = require('../../../src/compiler/parser');
 const { ProjectContext } = require('../../../src/compiler/context');
 const { CacheManager } = require('../../../src/compiler/cache');
@@ -24,7 +24,17 @@ describe('Performance Validation', () => {
   const projectRoot = path.resolve(__dirname, '../../..');
   const testProjectDir = path.join(projectRoot, 'features/examples/project');
   const testCacheDir = path.join(projectRoot, '.test-performance-cache');
-  const rulesPath = path.join(projectRoot, 'src/ai/rules.md');
+
+  // Helper function to get rules content and hash
+  async function getRules(promptBuilder) {
+    const rulesContent = await promptBuilder._getGherkinLangRules();
+    const contentHash = sha256(rulesContent);
+    return {
+      content: rulesContent,
+      contentHash,
+      target: 'javascript',
+    };
+  }
 
   afterEach(async () => {
     // Clean up test cache directory
@@ -37,38 +47,39 @@ describe('Performance Validation', () => {
     }
   });
 
-  describe('Rules Loader Performance', () => {
+  describe('Rules Loading Performance', () => {
     it('should load rules in under 50ms', async () => {
-      const loader = new RulesLoader();
+      const promptBuilder = new PromptBuilder();
       
       const startTime = process.hrtime.bigint();
-      const rules = await loader.load('javascript', rulesPath);
+      const rules = await getRules(promptBuilder);
       const duration = Number(process.hrtime.bigint() - startTime) / 1_000_000; // Convert to ms
 
       expect(rules).toBeDefined();
+      expect(rules.content).toBeTruthy();
+      expect(rules.contentHash).toBeTruthy();
       expect(duration).toBeLessThan(50); // <50ms target
       
       console.log(`Rules loading: ${duration.toFixed(2)}ms (target: <50ms)`);
     });
 
-    it('should handle cached rules efficiently', async () => {
-      const loader = new RulesLoader();
+    it('should handle repeated loads efficiently', async () => {
+      const promptBuilder = new PromptBuilder();
       
-      // First load (cold cache)
+      // First load
       const start1 = process.hrtime.bigint();
-      await loader.load('javascript', rulesPath);
+      await getRules(promptBuilder);
       const duration1 = Number(process.hrtime.bigint() - start1) / 1_000_000;
 
-      // Second load (warm cache - should be faster)
+      // Second load
       const start2 = process.hrtime.bigint();
-      await loader.load('javascript', rulesPath);
+      await getRules(promptBuilder);
       const duration2 = Number(process.hrtime.bigint() - start2) / 1_000_000;
 
       expect(duration1).toBeLessThan(50);
       expect(duration2).toBeLessThan(50);
-      // Cached load should be faster, but both should meet target
       
-      console.log(`Rules loading (cold): ${duration1.toFixed(2)}ms, (warm): ${duration2.toFixed(2)}ms`);
+      console.log(`Rules loading (first): ${duration1.toFixed(2)}ms, (second): ${duration2.toFixed(2)}ms`);
     });
   });
 
@@ -216,7 +227,7 @@ describe('Performance Validation', () => {
 
   describe('Cache Performance', () => {
     let cache;
-    let loader;
+    let promptBuilder;
     let testKey;
     let testEntry;
 
@@ -225,9 +236,9 @@ describe('Performance Validation', () => {
         cacheDir: testCacheDir,
         compilerVersion: '1.0.0-test'
       });
-      loader = new RulesLoader();
+      promptBuilder = new PromptBuilder();
       
-      const rules = await loader.load('javascript', rulesPath);
+      const rules = await getRules(promptBuilder);
       const featureFile = path.join(testProjectDir, 'mathematics.feature');
       const source = await fs.readFile(featureFile, 'utf8');
       
@@ -295,7 +306,8 @@ describe('Performance Validation', () => {
     });
 
     it('should store cache entries in under 100ms', async () => {
-      const rules = await loader.load('javascript', rulesPath);
+      const promptBuilder = new PromptBuilder();
+      const rules = await getRules(promptBuilder);
       const featureFile = path.join(testProjectDir, 'string_utils.feature');
       const source = await fs.readFile(featureFile, 'utf8');
       
@@ -337,7 +349,7 @@ describe('Performance Validation', () => {
 
   describe('End-to-End Performance', () => {
     it('should complete full compilation workflow efficiently', async () => {
-      const loader = new RulesLoader();
+      const promptBuilder = new PromptBuilder();
       const parser = new GherkinParser();
       const context = new ProjectContext();
       const cache = new CacheManager({ 
@@ -348,7 +360,7 @@ describe('Performance Validation', () => {
       const startTime = process.hrtime.bigint();
       
       // Full workflow
-      const rules = await loader.load('javascript', rulesPath);
+      const rules = await getRules(promptBuilder);
       await context.build(testProjectDir);
       const compileOrder = context.getCompilerOrder();
       

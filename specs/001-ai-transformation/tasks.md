@@ -53,14 +53,14 @@
 
 ### Implementation for User Story 1
 
-- [ ] T008 [US1] Implement prompt builder that constructs compilation prompts in src/ai/prompt-builder.js
-- [ ] T009 [US1] Implement response parser that extracts JavaScript code from AI responses in src/ai/response-parser.js
-- [ ] T010 [US1] Implement retry handler with exponential backoff and jitter in src/ai/retry-handler.js
-- [ ] T011 [US1] Implement AI transformer main entry point with transform method in src/ai/transformer.js
-- [ ] T012 [US1] Integrate AI transformer with Claude API client (@anthropic-ai/sdk) in src/ai/transformer.js
-- [ ] T013 [US1] Implement metadata tracking (model, tokens, duration) in src/ai/transformer.js
-- [ ] T014 [US1] Implement error handling for API errors and timeouts in src/ai/transformer.js
-- [ ] T015 [US1] Implement invalid code response handling with retry and clarification prompt in src/ai/transformer.js
+- [X] T008 [US1] Implement prompt builder that constructs compilation prompts in src/ai/prompt-builder.js
+- [X] T009 [US1] Implement response parser that extracts JavaScript code from AI responses in src/ai/response-parser.js
+- [X] T010 [US1] Implement retry handler with exponential backoff and jitter in src/ai/retry-handler.js
+- [X] T011 [US1] Implement AI transformer main entry point with transform method in src/ai/transformer.js
+- [X] T012 [US1] Integrate AI transformer with Claude API client (@anthropic-ai/sdk) in src/ai/transformer.js
+- [X] T013 [US1] Implement metadata tracking (model, tokens, duration) in src/ai/transformer.js
+- [X] T014 [US1] Implement error handling for API errors and timeouts in src/ai/transformer.js
+- [X] T015 [US1] Implement invalid code response handling with retry and clarification prompt in src/ai/transformer.js
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently. The transformer can compile GherkinLang source to JavaScript without tool support.
 
