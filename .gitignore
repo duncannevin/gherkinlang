@@ -37,3 +37,4 @@ yarn-error.log*
 /.specstory
 /.specify
 /.claude
+/*cache

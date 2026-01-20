@@ -17,9 +17,14 @@ const { readFile, findFiles } = require('./utils/fs');
 const path = require('path');
 const { ParseError } = require('./errors');
 
+/**
+ * Parser for GherkinLang source files.
+ * 
+ * @class GherkinParser
+ */
 class GherkinParser {
     /**
-      * Parse a .feature file and extract structure.
+     * Parse a .feature file and extract structure.
       * @param {string} filePath - Path to .feature file
       * @param {string} [content] - Optional file content (if omitted, reads from filePath)
       * @returns {Promise<ParsedFeature>}

@@ -21,9 +21,17 @@ const { readFile, writeFile, exists, mkdir, rm, stat } = require('./utils/fs');
 /**
  * Cache manager for GherkinLang compiler.
  * 
- * @param {CacheManagerOptions} [options={}] - Configuration options
+ * @class CacheManager
  */
 class CacheManager {
+    /**
+     * Creates a new CacheManager instance.
+     * 
+     * @param {Object} [options={}] - Configuration options
+     * @param {string} [options.cacheDir='.gherkin-cache'] - Cache directory path
+     * @param {string} [options.maxSize='100MB'] - Maximum cache size (e.g., '100MB', '500KB')
+     * @param {string} [options.compilerVersion='1.0.0'] - Compiler version string
+     */
     constructor(options = {}) {
         this.cacheDir = options.cacheDir || '.gherkin-cache';
         this.maxSize = this.parseSize(options.maxSize || '100MB');
@@ -43,6 +51,13 @@ class CacheManager {
         };
     }
 
+    /**
+     * Retrieve cached compilation result.
+     * 
+     * @param {string} key - Cache key
+     * @returns {Promise<import('./types').CacheEntry|null>} Cache entry or null if not found
+     * @throws {CacheError} If cache retrieval fails
+     */
     async get(key) {
         try {
             await this._getOrInitializeManifest();
@@ -92,6 +107,12 @@ class CacheManager {
         }
     }
 
+    /**
+     * Check if cache entry is valid (exists and not corrupted).
+     * 
+     * @param {string} key - Cache key
+     * @returns {Promise<boolean>} True if valid, false otherwise
+     */
     async isValid(key) {
         try {
             // Check if entry exists in manifest
@@ -129,6 +150,14 @@ class CacheManager {
         }
     }
 
+    /**
+     * Store compilation result in cache.
+     * 
+     * @param {string} key - Cache key
+     * @param {import('./types').CacheEntry} entry - Cache entry to store
+     * @returns {Promise<void>}
+     * @throws {CacheError} If cache storage fails
+     */
     async set(key, entry) {
         try {
             await this._getOrInitializeManifest();
@@ -173,6 +202,13 @@ class CacheManager {
         }
     }
 
+    /**
+     * Evict least recently used entries to stay within size limit.
+     * 
+     * @param {number} maxSize - Maximum cache size in bytes
+     * @returns {Promise<void>}
+     * @throws {CacheError} If eviction fails
+     */
     async evict(maxSize) {
         try {
             // Sort entries by lastAccessed (oldest first)
@@ -208,6 +244,15 @@ class CacheManager {
         }
     }
 
+    /**
+     * Invalidate cache entries when source/rules/version/target changes.
+     * 
+     * @param {string} sourceHash - New source hash
+     * @param {string} rulesHash - New rules hash
+     * @param {string} compilerVersion - Compiler version
+     * @param {string} target - Target language
+     * @returns {Promise<void>}
+     */
     async invalidate(sourceHash, rulesHash, compilerVersion, target) {
         const keysToInvalidate = [];
 
@@ -240,6 +285,11 @@ class CacheManager {
         }
     }
 
+    /**
+     * Get cache statistics.
+     * 
+     * @returns {Promise<import('./types').CacheStats>} Cache statistics including entry count, size, hit/miss rates
+     */
     async getStats() {
         await this._getOrInitializeManifest();
 
@@ -255,14 +305,35 @@ class CacheManager {
         };
     }
 
+    /**
+     * Calculate total cache size from manifest.
+     * 
+     * @returns {number} Total size in bytes
+     */
     calculateSize() {
         return this.manifest.totalSize;
     }
 
+    /**
+     * Generate deterministic cache key from compilation inputs.
+     * 
+     * @param {string} source - Source file content
+     * @param {string} rules - Rules file content
+     * @param {string} compilerVersion - Compiler version string
+     * @param {string} target - Target language ('javascript' | 'elixir')
+     * @returns {string} SHA256 hash as hex string (64 characters)
+     */
     generateKey(source, rules, compilerVersion, target) {
         return sha256Concat(source, rules, compilerVersion, target);
     }
 
+    /**
+     * Parse size string to bytes.
+     * 
+     * @param {string} sizeString - Size string (e.g., '100MB', '500KB', '1GB')
+     * @returns {number} Size in bytes
+     * @throws {CacheError} If size string is invalid
+     */
     parseSize(sizeString) {
         const match = sizeString.match(/^(\d+(?:\.\d+)?)\s*(KB|MB|GB|B)?$/i);
 
@@ -294,6 +365,13 @@ class CacheManager {
         }
     }
 
+    /**
+     * Clear cache entries.
+     * 
+     * @param {string} [key] - Optional specific key to clear, or undefined to clear all
+     * @returns {Promise<void>}
+     * @throws {CacheError} If clear operation fails
+     */
     async clear(key) {
         try {
             if (key) {

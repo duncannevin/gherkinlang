@@ -15,7 +15,15 @@ const { RulesLoadError } = require('../compiler/errors');
 const { sha256 } = require('../compiler/utils/hash');
 const { readFile, stat } = require('../compiler/utils/fs');
 
+/**
+ * Loader for language rules from rules.md file.
+ * 
+ * @class RulesLoader
+ */
 class RulesLoader {
+  /**
+   * Creates a new RulesLoader instance.
+   */
   constructor() {
     // In-memory cache: Map<target, LanguageRules>
     this._cache = new Map();

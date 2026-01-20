@@ -36,6 +36,14 @@ class ProjectContext {
         this._config = null;
     }
 
+    /**
+     * Build project context by discovering files, parsing features, and constructing dependency graph.
+     * 
+     * @param {string} rootDir - Root directory to search for .feature files
+     * @param {string} [configPath] - Path to configuration file (default: rootDir/.gherkinrc.json)
+     * @returns {Promise<void>}
+     * @throws {ContextBuildError} If root directory not found or context building fails
+     */
     async build(rootDir, configPath = path.join(rootDir, '.gherkinrc.json')) {
         // Normalize paths
         const root = path.resolve(rootDir);
@@ -58,7 +66,9 @@ class ProjectContext {
     }
 
     /**
-     * Kahn's algorthm used to sort the graph topologically in order to compile the modules in the correct order.
+     * Get topological sort order for compilation using Kahn's algorithm.
+     * 
+     * @returns {string[]} Array of module names in compilation order
      */
     getCompilerOrder() {
         if (!this._graph) {
@@ -108,7 +118,9 @@ class ProjectContext {
     }
 
     /**
-     * Finds circular dependencies 
+     * Detect circular dependencies in the dependency graph.
+     * 
+     * @returns {import('./types').Cycle[]} Array of detected cycles
      */
     detectCycles() {
         if (!this._graph) {
@@ -164,10 +176,22 @@ class ProjectContext {
         return cycles;
     }
 
+    /**
+     * Get module information by name.
+     * 
+     * @param {string} moduleName - Module name (feature name)
+     * @returns {ModuleInfo|null} Module information or null if not found
+     */
     getModule(moduleName) {
         return this._modules.get(moduleName) || null;
     }
 
+    /**
+     * Get dependencies for a module.
+     * 
+     * @param {string} moduleName - Module name (feature name)
+     * @returns {string[]} Array of dependency module names
+     */
     getDependencies(moduleName) {
         const module = this._modules.get(moduleName);
         if (!module) {
@@ -176,6 +200,11 @@ class ProjectContext {
         return Array.from(module.dependencies);
     }
 
+    /**
+     * Get loaded project configuration.
+     * 
+     * @returns {ProjectConfiguration|null} Project configuration or null if not loaded
+     */
     getConfig() {
         return this._config;
     }

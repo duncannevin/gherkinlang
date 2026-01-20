@@ -167,16 +167,16 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T073 [P] Add JSDoc comments to all public methods in src/compiler/cache.js
-- [ ] T074 [P] Add JSDoc comments to all public methods in src/compiler/parser.js
-- [ ] T075 [P] Add JSDoc comments to all public methods in src/compiler/context.js
-- [ ] T076 [P] Add JSDoc comments to all public methods in src/ai/rules-loader.js
-- [ ] T077 [P] Create integration test in test/integration/compiler/core-components.test.js to test all components together
-- [ ] T078 [P] Update README.md with usage examples from quickstart.md
-- [ ] T079 [P] Validate performance targets: rules loading <50ms, parser 95% success rate, context <2s for 100 files, cache <10ms hits
-- [ ] T080 Add error message improvements with actionable suggestions and documentation links
-- [ ] T081 [P] Code cleanup and refactoring: remove unused code, improve naming consistency
-- [ ] T082 Run quickstart.md validation to ensure all examples work correctly
+- [X] T073 [P] Add JSDoc comments to all public methods in src/compiler/cache.js
+- [X] T074 [P] Add JSDoc comments to all public methods in src/compiler/parser.js
+- [X] T075 [P] Add JSDoc comments to all public methods in src/compiler/context.js
+- [X] T076 [P] Add JSDoc comments to all public methods in src/ai/rules-loader.js
+- [X] T077 [P] Create integration test in test/integration/compiler/core-components.test.js to test all components together
+- [X] T078 [P] Update README.md with usage examples from quickstart.md
+- [X] T079 [P] Validate performance targets: rules loading <50ms, parser 95% success rate, context <2s for 100 files, cache <10ms hits
+- [C] T080 Add error message improvements with actionable suggestions and documentation links (cancelled - won't be done)
+- [C] T081 [P] Code cleanup and refactoring: remove unused code, improve naming consistency (cancelled - won't be done)
+- [C] T082 Run quickstart.md validation to ensure all examples work correctly (cancelled - won't be done)
 
 ---
 
