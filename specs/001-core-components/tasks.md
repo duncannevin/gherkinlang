@@ -135,29 +135,29 @@
 
 ### Implementation for User Story 4
 
-- [ ] T050 [US4] Create CacheManager class in src/compiler/cache.js with generateKey() method
-- [ ] T051 [US4] Implement cache key generation in CacheManager.generateKey() using SHA256(source + rules + compilerVersion + target)
-- [ ] T052 [US4] Implement cache directory initialization in CacheManager constructor to create .gherkin-cache/ if needed
-- [ ] T053 [US4] Implement manifest loading in CacheManager to read .gherkin-cache/manifest.json
-- [ ] T054 [US4] Implement manifest creation in CacheManager if manifest.json doesn't exist
-- [ ] T055 [US4] Implement cache entry storage in CacheManager.set() to write JSON file to .gherkin-cache/{key}.cache
-- [ ] T056 [US4] Implement cache entry retrieval in CacheManager.get() to read and parse cache file
-- [ ] T057 [US4] Implement cache entry validation in CacheManager.isValid() to check file exists and is not corrupted
-- [ ] T058 [US4] Implement manifest update in CacheManager.set() to add entry to manifest with size and lastAccessed
-- [ ] T059 [US4] Implement manifest update in CacheManager.get() to update lastAccessed timestamp
-- [ ] T060 [US4] Implement cache clearing in CacheManager.clear() to remove specific entry or all entries
-- [ ] T061 [US4] Implement LRU eviction in CacheManager.evict() to remove oldest entries when size exceeds limit
-- [ ] T062 [US4] Implement size calculation in CacheManager to track total cache size from manifest
-- [ ] T063 [US4] Implement size string parsing in CacheManager to convert "100MB" to bytes
-- [ ] T064 [US4] Implement cache invalidation logic in CacheManager to detect source/rules/version/target changes
-- [ ] T065 [US4] Create CacheEntry type definition in src/compiler/types.js with key, sourceHash, rulesHash, compiledCode, generatedTests, metadata fields
-- [ ] T066 [US4] Create CacheMetadata type definition in src/compiler/types.js with timestamp, duration, model, compilerVersion, target fields
-- [ ] T067 [US4] Create CacheManifest type definition in src/compiler/types.js with entries, totalSize, maxSize, lastUpdated fields
-- [ ] T068 [US4] Create ManifestEntry type definition in src/compiler/types.js with key, file, size, lastAccessed fields
-- [ ] T069 [US4] Create CacheStats type definition in src/compiler/types.js with entries, totalSize, hits, misses, hitRate fields
-- [ ] T070 [US4] Implement getStats() method in CacheManager to return cache statistics
-- [ ] T071 [US4] Implement error handling in CacheManager for read/write errors without failing compilation
-- [ ] T072 [US4] Export CacheManager from src/compiler/cache.js
+- [X] T050 [US4] Create CacheManager class in src/compiler/cache.js with generateKey() method
+- [X] T051 [US4] Implement cache key generation in CacheManager.generateKey() using SHA256(source + rules + compilerVersion + target)
+- [X] T052 [US4] Implement cache directory initialization in CacheManager constructor to create .gherkin-cache/ if needed
+- [X] T053 [US4] Implement manifest loading in CacheManager to read .gherkin-cache/manifest.json
+- [X] T054 [US4] Implement manifest creation in CacheManager if manifest.json doesn't exist
+- [X] T055 [US4] Implement cache entry storage in CacheManager.set() to write JSON file to .gherkin-cache/{key}.cache
+- [X] T056 [US4] Implement cache entry retrieval in CacheManager.get() to read and parse cache file
+- [X] T057 [US4] Implement cache entry validation in CacheManager.isValid() to check file exists and is not corrupted
+- [X] T058 [US4] Implement manifest update in CacheManager.set() to add entry to manifest with size and lastAccessed
+- [X] T059 [US4] Implement manifest update in CacheManager.get() to update lastAccessed timestamp
+- [X] T060 [US4] Implement cache clearing in CacheManager.clear() to remove specific entry or all entries
+- [X] T061 [US4] Implement LRU eviction in CacheManager.evict() to remove oldest entries when size exceeds limit
+- [X] T062 [US4] Implement size calculation in CacheManager to track total cache size from manifest
+- [X] T063 [US4] Implement size string parsing in CacheManager to convert "100MB" to bytes
+- [X] T064 [US4] Implement cache invalidation logic in CacheManager to detect source/rules/version/target changes
+- [X] T065 [US4] Create CacheEntry type definition in src/compiler/types.js with key, sourceHash, rulesHash, compiledCode, generatedTests, metadata fields
+- [X] T066 [US4] Create CacheMetadata type definition in src/compiler/types.js with timestamp, duration, model, compilerVersion, target fields
+- [X] T067 [US4] Create CacheManifest type definition in src/compiler/types.js with entries, totalSize, maxSize, lastUpdated fields
+- [X] T068 [US4] Create ManifestEntry type definition in src/compiler/types.js with key, file, size, lastAccessed fields
+- [X] T069 [US4] Create CacheStats type definition in src/compiler/types.js with entries, totalSize, hits, misses, hitRate fields
+- [X] T070 [US4] Implement getStats() method in CacheManager to return cache statistics
+- [X] T071 [US4] Implement error handling in CacheManager for read/write errors without failing compilation
+- [X] T072 [US4] Export CacheManager from src/compiler/cache.js
 
 **Checkpoint**: At this point, User Story 4 should be fully functional. Can generate cache keys, store/retrieve entries, evict LRU entries, and handle errors gracefully.
 

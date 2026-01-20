@@ -158,6 +158,13 @@ const { ParseError } = require('./errors');
  */
 
 /**
+ * @typedef {Object} CacheManagerOptions
+ * @property {string} [cacheDir] - Cache directory path (default: '.gherkin-cache')
+ * @property {string} [maxSize] - Maximum cache size in bytes (default: '100MB')
+ * @property {string} [compilerVersion] - Compiler version string (default: '1.0.0')
+ */
+
+/**
  * @typedef {Object} ProjectContextData
  * @property {Map<string, ModuleInfo>} modules - Map of feature names to module info
  * @property {ProjectConfiguration} config - Loaded and validated configuration
