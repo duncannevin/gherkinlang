@@ -74,15 +74,15 @@
 
 ### Implementation for User Story 2
 
-- [ ] T016 [US2] Implement MCP client connection management (spawn subprocess, stdin/stdout) in src/mcp/client.js
-- [ ] T017 [US2] Implement MCP protocol initialization and tool discovery in src/mcp/client.js
-- [ ] T018 [US2] Implement tool registry that manages discovered tools in src/mcp/tool-registry.js
-- [ ] T019 [US2] Implement tool invoker that executes tool calls via MCP protocol in src/mcp/tool-invoker.js
-- [ ] T020 [US2] Implement tool invocation timeout handling (5 seconds per tool) in src/mcp/tool-invoker.js
-- [ ] T021 [US2] Implement tool result formatting for Claude API tool_result format in src/mcp/tool-invoker.js
-- [ ] T022 [US2] Integrate MCP client with AI transformer for tool-assisted compilation in src/ai/transformer.js
-- [ ] T023 [US2] Implement multi-turn conversation support when tools are invoked in src/ai/transformer.js
-- [ ] T024 [US2] Implement error handling for MCP connection failures and tool invocation errors in src/mcp/client.js
+- [X] T016 [US2] Implement MCP client connection management (spawn subprocess, stdin/stdout) in src/mcp/client.js
+- [X] T017 [US2] Implement MCP protocol initialization and tool discovery in src/mcp/client.js
+- [X] T018 [US2] Implement tool registry that manages discovered tools in src/mcp/tool-registry.js
+- [X] T019 [US2] Implement tool invoker that executes tool calls via MCP protocol in src/mcp/tool-invoker.js
+- [X] T020 [US2] Implement tool invocation timeout handling (5 seconds per tool) in src/mcp/tool-invoker.js
+- [X] T021 [US2] Implement tool result formatting for Claude API tool_result format in src/mcp/tool-invoker.js
+- [X] T022 [US2] Integrate MCP client with AI transformer for tool-assisted compilation in src/ai/transformer.js
+- [X] T023 [US2] Implement multi-turn conversation support when tools are invoked in src/ai/transformer.js
+- [X] T024 [US2] Implement error handling for MCP connection failures and tool invocation errors in src/mcp/client.js
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently. The transformer can use tools during compilation to improve quality.
 
