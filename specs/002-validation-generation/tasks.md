@@ -54,10 +54,10 @@
 
 #### Syntax Validation (FR-001 to FR-004)
 
-- [ ] T010 [P] [US1] Implement validateSyntax() function using @babel/parser in src/validation/syntax.js
-- [ ] T011 [US1] Add ES2020+ plugin configuration (optionalChaining, nullishCoalescingOperator) in src/validation/syntax.js
-- [ ] T012 [US1] Implement error recovery mode to collect up to 10 syntax errors in src/validation/syntax.js
-- [ ] T013 [US1] Add support for both CommonJS and ES Module sourceType in src/validation/syntax.js
+- [x] T010 [P] [US1] Implement validateSyntax() function using @babel/parser in src/validation/syntax.js
+- [x] T011 [US1] Add ES2020+ plugin configuration (optionalChaining, nullishCoalescingOperator) in src/validation/syntax.js
+- [x] T012 [US1] Implement error recovery mode to collect up to 10 syntax errors in src/validation/syntax.js
+- [x] T013 [US1] Add support for both CommonJS and ES Module sourceType in src/validation/syntax.js
 
 #### Purity Validation (FR-005 to FR-009)
 
