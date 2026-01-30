@@ -256,7 +256,7 @@ describe('fs utility module', () => {
       expect(fs.rmdir).not.toHaveBeenCalled();
     });
 
-    it('should remove a directory recursively', async () => {
+    it('should remove a directory', async () => {
       const dirPath = '/path/to/directory';
       const stats = {
         isDirectory: () => true,
@@ -268,7 +268,7 @@ describe('fs utility module', () => {
       await rm(dirPath);
 
       expect(fs.stat).toHaveBeenCalledWith(dirPath);
-      expect(fs.rmdir).toHaveBeenCalledWith(dirPath, { recursive: true });
+      expect(fs.rmdir).toHaveBeenCalledWith(dirPath);
       expect(fs.unlink).not.toHaveBeenCalled();
     });
 

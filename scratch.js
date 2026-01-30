@@ -1,33 +1,51 @@
-const { CacheManager } = require('./src/compiler/cache');
+const { AITransformer } = require('./src/ai/transformer');
+const { MCPClient } = require('./src/mcp/client');
 
-async function test() {
-  const cache = new CacheManager({ cacheDir: '.test-cache' });
-  
-  const key = cache.generateKey('source', 'rules', '1.0.0', 'javascript');
-  console.log('Generated key:', key);
-  
-  const entry = {
-    key,
-    sourceHash: 'abc123',
-    rulesHash: 'def456',
-    compiledCode: 'console.log("test");',
-    metadata: {
-      timestamp: new Date().toISOString(),
-      duration: 100,
-      model: 'test',
-      compilerVersion: '1.0.0',
-      target: 'javascript',
-    },
+async function scratch() {
+  // Example GherkinLang source code
+  const gherkinSource = `
+Feature: Example feature
+  Scenario: Example scenario
+    Given a condition
+    When an action occurs
+    Then a result is expected
+`;
+
+  // Example project context
+  const projectContext = {
+    moduleName: 'example',
+    dependencies: [],
+    imports: [],
   };
-  
-  await cache.set(key, entry);
-  const retrieved = await cache.get(key);
-  console.log('Retrieved:', retrieved);
-  
-  const stats = await cache.getStats();
-  console.log('Stats:', stats);
-  
-  await cache.clear();
+
+  // Create and connect MCP client
+  const mcpClient = new MCPClient();
+  const serverCommand = process.env.MCP_SERVER_URL
+    ? process.env.MCP_SERVER_URL.split(' ')
+    : ['node', 'mcp-server.js'];
+
+  await mcpClient.connect(serverCommand);
+  console.log('Available tools:', mcpClient.getTools().map(t => t.name));
+
+  // Create transformer with MCP client
+  const transformer = new AITransformer({
+    apiKey: process.env.ANTHROPIC_API_KEY,
+    model: 'claude-sonnet-4-5',
+    mcpClient,
+  });
+
+  // Transform with tool support
+  const result = await transformer.transform(
+    gherkinSource,
+    projectContext,
+    { target: 'javascript', maxTurns: 5 }
+  );
+
+  console.log('Code:', result.code);
+  console.log('Tool calls:', result.toolCalls);
+
+  // Clean up
+  await mcpClient.disconnect();
 }
 
-test().catch(console.error);
+scratch().catch(console.error);

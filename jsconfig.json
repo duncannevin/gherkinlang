@@ -8,7 +8,7 @@
   "include": [
     "src/**/*",
     "test/**/*"
-  ],
+, "phase5-scratch.js"  ],
   "exclude": [
     "node_modules",
     "coverage",
