@@ -49,10 +49,10 @@ class ToolInvoker {
    * Invoke a tool with parameters.
    * 
    * @param {string} toolName - Name of tool to invoke
-   * @param {Object} arguments - Tool invocation parameters
+   * @param {Object} args - Tool invocation parameters
    * @returns {Promise<ToolResult>} Tool execution result
    */
-  async invokeTool(toolName, arguments) {
+  async invokeTool(toolName, args) {
     const startTime = Date.now();
     
     const tool = this._client.getTools().find(t => t.name === toolName);
@@ -73,7 +73,7 @@ class ToolInvoker {
         method: 'tools/call',
         params: {
           name: tool.mcpName,
-          arguments,
+          arguments: args,
         },
       };
 

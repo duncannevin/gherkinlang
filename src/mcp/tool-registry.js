@@ -8,6 +8,8 @@
  * @module mcp/tool-registry
  */
 
+const { getAllTools } = require('./tools');
+
 /**
  * @typedef {import('./types').MCPTool} MCPTool
  * @typedef {import('../ai/types').ClaudeTool} ClaudeTool
@@ -87,6 +89,19 @@ class ToolRegistry {
    */
   hasTool(name) {
     return this._tools.has(name);
+  }
+
+  /**
+   * Register all available MCP tools from tools/index.js.
+   * 
+   * Convenience method to register all built-in tools (analyzer, dependencies,
+   * filesystem, test-generator) in one call.
+   */
+  registerAllTools() {
+    const tools = getAllTools();
+    for (const tool of tools) {
+      this.register(tool);
+    }
   }
 }
 

@@ -261,13 +261,36 @@ describe('AITransformer', () => {
         },
       ];
 
+      // Mock the toolInvoker
+      const mockToolInvoker = {
+        invokeTool: jest.fn().mockResolvedValue({
+          success: true,
+          content: { result: 'file contents' },
+          duration: 100,
+        }),
+        formatToolResult: jest.fn().mockReturnValue({
+          role: 'user',
+          content: [{ type: 'tool_result', tool_use_id: 'tool_1', content: 'result' }],
+        }),
+      };
+      transformer._toolInvoker = mockToolInvoker;
+
       mockPromptBuilder.build.mockResolvedValue(mockPrompt);
-      mockRetryHandler.execute.mockResolvedValue(mockAPIResponse);
-      mockResponseParser.parse.mockReturnValue({
-        code: 'const x = 1;',
-        toolCalls,
-        hasCode: true,
-      });
+      // First call returns tool_use, second call returns code
+      mockRetryHandler.execute
+        .mockResolvedValueOnce(mockAPIResponse)
+        .mockResolvedValueOnce(mockAPIResponse);
+      mockResponseParser.parse
+        .mockReturnValueOnce({
+          code: null,
+          toolCalls,
+          hasCode: false,
+        })
+        .mockReturnValueOnce({
+          code: 'const x = 1;',
+          toolCalls: [],
+          hasCode: true,
+        });
 
       const result = await transformer.transform(mockSource, mockContext);
 
@@ -275,8 +298,9 @@ describe('AITransformer', () => {
       expect(result.toolCalls[0]).toEqual({
         toolName: 'file_system',
         arguments: { path: '/path/to/file' },
-        duration: 0,
-        success: false,
+        result: { result: 'file contents' },
+        duration: expect.any(Number),
+        success: true,
       });
     });
 
@@ -330,11 +354,10 @@ describe('AITransformer', () => {
       ).rejects.toThrow(InvalidCodeError);
     });
 
-    it('should throw InvalidCodeError when clarification retry also fails', async () => {
+    it('should throw InvalidCodeError when max turns reached without code', async () => {
       mockPromptBuilder.build.mockResolvedValue(mockPrompt);
-      mockRetryHandler.execute
-        .mockResolvedValueOnce(mockAPIResponse)
-        .mockResolvedValueOnce(mockAPIResponse);
+      // Mock enough API calls for the multi-turn loop (default maxTurns is 5)
+      mockRetryHandler.execute.mockResolvedValue(mockAPIResponse);
       mockResponseParser.parse.mockReturnValue({
         code: null,
         toolCalls: [],

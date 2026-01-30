@@ -376,22 +376,22 @@ describe('GherkinParser', () => {
 
       expect(result).toBeInstanceOf(Map);
       expect(result.size).toBe(2);
-      expect(findFiles).toHaveBeenCalledWith(dirPath, '*.feature');
+      expect(findFiles).toHaveBeenCalledWith(dirPath);
       expect(result.get(filePaths[0]).featureName).toBe('File1');
       expect(result.get(filePaths[1]).featureName).toBe('File2');
     });
 
-    it('should use custom pattern when provided', async () => {
+    it('should parse files from directory using findFiles', async () => {
       const dirPath = '/path/to/features';
-      const filePaths = ['/path/to/features/file.spec'];
+      const filePaths = ['/path/to/features/file.feature'];
       const content = 'Feature: File\n\nScenario: Test\n';
 
       findFiles.mockResolvedValue(filePaths);
       readFile.mockResolvedValue(content);
 
-      const result = await parser.parseDirectory(dirPath, '*.spec');
+      const result = await parser.parseDirectory(dirPath);
 
-      expect(findFiles).toHaveBeenCalledWith(dirPath, '*.spec');
+      expect(findFiles).toHaveBeenCalledWith(dirPath);
       expect(result.size).toBe(1);
     });
 

@@ -86,6 +86,11 @@
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently. The transformer can use tools during compilation to improve quality.
 
+### Unit Tests for User Story 2
+
+- [X] T043 [P] [US2] Write unit tests for ToolRegistry in test/unit/mcp/tool-registry.test.js
+- [X] T044 [P] [US2] Write unit tests for ToolInvoker in test/unit/mcp/tool-invoker.test.js
+
 ---
 
 ## Phase 5: User Story 3 - MCP Tools Provide Compilation Support Services (Priority: P2)
@@ -96,15 +101,23 @@
 
 ### Implementation for User Story 3
 
-- [ ] T025 [P] [US3] Implement code analyzer tool that validates JavaScript syntax and purity in src/mcp/tools/analyzer.js
-- [ ] T026 [P] [US3] Implement dependency checker tool that verifies package availability in src/mcp/tools/dependencies.js
-- [ ] T027 [P] [US3] Implement file system tool that reads project files for cross-module references in src/mcp/tools/filesystem.js
-- [ ] T028 [P] [US3] Implement test generator tool that creates test code for generated implementations in src/mcp/tools/test-generator.js
-- [ ] T029 [US3] Create tool registry export that registers all tools in src/mcp/tools/index.js
-- [ ] T030 [US3] Implement tool input validation and error handling for all tools in src/mcp/tools/analyzer.js, src/mcp/tools/dependencies.js, src/mcp/tools/filesystem.js, src/mcp/tools/test-generator.js
-- [ ] T031 [US3] Integrate all tools with MCP client tool registry in src/mcp/tool-registry.js
+- [X] T025 [P] [US3] Implement code analyzer tool that validates JavaScript syntax and purity in src/mcp/tools/analyzer.js
+- [X] T026 [P] [US3] Implement dependency checker tool that verifies package availability in src/mcp/tools/dependencies.js
+- [X] T027 [P] [US3] Implement file system tool that reads project files for cross-module references in src/mcp/tools/filesystem.js
+- [X] T028 [P] [US3] Implement test generator tool that creates test code for generated implementations in src/mcp/tools/test-generator.js
+- [X] T029 [US3] Create tool registry export that registers all tools in src/mcp/tools/index.js
+- [X] T030 [US3] Implement tool input validation and error handling for all tools in src/mcp/tools/analyzer.js, src/mcp/tools/dependencies.js, src/mcp/tools/filesystem.js, src/mcp/tools/test-generator.js
+- [X] T031 [US3] Integrate all tools with MCP client tool registry in src/mcp/tool-registry.js
 
 **Checkpoint**: All user stories should now be independently functional. The complete AI transformation system with tool support is operational.
+
+### Unit Tests for User Story 3
+
+- [X] T038 [P] [US3] Write unit tests for CodeAnalyzer in test/unit/mcp/tools/analyzer.test.js
+- [X] T039 [P] [US3] Write unit tests for DependencyChecker in test/unit/mcp/tools/dependencies.test.js
+- [X] T040 [P] [US3] Write unit tests for FileSystem in test/unit/mcp/tools/filesystem.test.js
+- [X] T041 [P] [US3] Write unit tests for TestGenerator in test/unit/mcp/tools/test-generator.test.js
+- [X] T042 [P] [US3] Write unit tests for tool registry in test/unit/mcp/tools/index.test.js
 
 ---
 
