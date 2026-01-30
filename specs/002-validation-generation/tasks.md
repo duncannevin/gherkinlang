@@ -61,12 +61,12 @@
 
 #### Purity Validation (FR-005 to FR-009)
 
-- [ ] T014 [P] [US1] Implement validatePurity() function using @babel/traverse in src/validation/purity.js
-- [ ] T015 [US1] Add detection for mutation patterns (AssignmentExpression, UpdateExpression) in src/validation/purity.js
-- [ ] T016 [US1] Add detection for forbidden constructs (ForStatement, WhileStatement, ThisExpression, ClassDeclaration) in src/validation/purity.js
-- [ ] T017 [US1] Add detection for side effects (console.*, fs.*, fetch, setTimeout) in src/validation/purity.js
-- [ ] T018 [US1] Add detection for global access (window, global, process mutations) in src/validation/purity.js
-- [ ] T019 [US1] Ensure pure patterns are allowed (closures, higher-order functions, map/filter/reduce, spread) in src/validation/purity.js
+- [x] T014 [P] [US1] Implement validatePurity() function using @babel/traverse in src/validation/purity.js
+- [x] T015 [US1] Add detection for mutation patterns (AssignmentExpression, UpdateExpression) in src/validation/purity.js
+- [x] T016 [US1] Add detection for forbidden constructs (ForStatement, WhileStatement, ThisExpression, ClassDeclaration) in src/validation/purity.js
+- [x] T017 [US1] Add detection for side effects (console.*, fs.*, fetch, setTimeout) in src/validation/purity.js
+- [x] T018 [US1] Add detection for global access (window, global, process mutations) in src/validation/purity.js
+- [x] T019 [US1] Ensure pure patterns are allowed (closures, higher-order functions, map/filter/reduce, spread) in src/validation/purity.js
 
 #### Lint Validation (FR-010 to FR-013)
 
