@@ -125,12 +125,12 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T032 [P] Update main library entry point to export AI transformer and MCP client in src/index.js
-- [ ] T033 [P] Add JSDoc documentation to all public interfaces in src/ai/transformer.js, src/mcp/client.js, src/mcp/tools/*.js
-- [ ] T034 Code cleanup and refactoring across all AI transformation components
-- [ ] T035 Performance optimization for prompt construction and response parsing
-- [ ] T036 [P] Update README.md with AI transformation usage examples
-- [ ] T037 Run quickstart.md validation to ensure all examples work correctly
+- [X] T032 [P] Update main library entry point to export AI transformer and MCP client in src/index.js
+- [X] T033 [P] Add JSDoc documentation to all public interfaces in src/ai/transformer.js, src/mcp/client.js, src/mcp/tools/*.js
+- [X] T034 Code cleanup and refactoring across all AI transformation components
+- [X] T035 Performance optimization for prompt construction and response parsing
+- [X] T036 [P] Update README.md with AI transformation usage examples
+- [X] T037 Run quickstart.md validation to ensure all examples work correctly
 
 ---
 

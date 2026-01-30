@@ -8,6 +8,8 @@ GherkinLang is an experimental programming language where compilation rules are 
 - Pure functional JavaScript output
 - Deterministic builds with content-addressed caching
 - Human-readable source code and documentation
+- Tool-assisted compilation via MCP (Model Context Protocol)
+- Code validation, dependency checking, and test generation tools
 
 ## Installation
 
@@ -176,6 +178,94 @@ async function compileWithCache(featureFile) {
 
   return compiledCode;
 }
+```
+
+### AI Transformation
+
+The AI Transformer uses Claude API to transform GherkinLang source code into JavaScript.
+
+#### Basic AI Transformation
+
+```javascript
+const { AITransformer } = require('gherkinlang-js');
+
+// Create transformer
+const transformer = new AITransformer({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+  model: 'claude-sonnet-4-5',
+  maxRetries: 3,
+});
+
+// Transform source code
+const result = await transformer.transform(
+  'Feature: Calculator\nScenario: Add numbers',
+  { moduleName: 'calculator' }
+);
+
+if (result.success) {
+  console.log('Generated code:', result.code);
+  console.log('Tokens used:', result.metadata.tokens.total);
+  console.log('Duration:', result.metadata.duration, 'ms');
+}
+```
+
+#### Tool-Assisted Compilation with MCP
+
+```javascript
+const { AITransformer, MCPClient } = require('gherkinlang-js');
+
+// Connect to MCP server for tool support
+const mcpClient = new MCPClient();
+await mcpClient.connect(['node', 'mcp-server.js']);
+
+// Create transformer with MCP client
+const transformer = new AITransformer({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+  mcpClient,
+});
+
+// Transform with tool-assisted compilation
+const result = await transformer.transform(source, context);
+
+// Check tool usage
+if (result.toolCalls.length > 0) {
+  console.log('Tools used:');
+  result.toolCalls.forEach(call => {
+    console.log(`  - ${call.toolName}: ${call.duration}ms`);
+  });
+}
+
+// Cleanup
+await mcpClient.disconnect();
+```
+
+#### Using MCP Tools Directly
+
+```javascript
+const { CodeAnalyzer, DependencyChecker, TestGenerator } = require('gherkinlang-js');
+
+// Code Analyzer - validate JavaScript syntax and purity
+const analyzer = new CodeAnalyzer();
+const analysis = await analyzer.execute({
+  code: 'const add = (a, b) => a + b;',
+  checks: ['syntax', 'purity'],
+});
+console.log('Valid:', analysis.content.valid);
+console.log('Errors:', analysis.content.errors);
+
+// Dependency Checker - verify npm packages
+const checker = new DependencyChecker();
+const pkg = await checker.execute({ packageName: 'lodash' });
+console.log('Package exists:', pkg.content.exists);
+console.log('Latest version:', pkg.content.version);
+
+// Test Generator - generate Jest tests
+const generator = new TestGenerator();
+const tests = await generator.execute({
+  code: 'const add = (a, b) => a + b; module.exports = { add };',
+  testFramework: 'jest',
+});
+console.log('Generated tests:', tests.content.testCode);
 ```
 
 ### Multi-File Project Example
@@ -348,11 +438,81 @@ try {
 }
 ```
 
+### AI Transformation Errors
+
+```javascript
+const {
+  AITransformer,
+  TransformationError,
+  APIError,
+  RateLimitError,
+  InvalidCodeError,
+} = require('gherkinlang-js');
+
+try {
+  const result = await transformer.transform(source, context);
+} catch (error) {
+  if (error instanceof RateLimitError) {
+    console.error('Rate limit exceeded. Retry after:', error.retryAfter);
+  } else if (error instanceof APIError) {
+    console.error('API error:', error.message, 'Status:', error.statusCode);
+  } else if (error instanceof InvalidCodeError) {
+    console.error('Invalid code generated:', error.message);
+  } else if (error instanceof TransformationError) {
+    console.error('Transformation failed:', error.message);
+  }
+}
+```
+
 ## Documentation
 
 See [architecture.md](./architecture.md) for detailed architecture documentation.
 
 For more examples and API documentation, see:
-- [quickstart.md](./specs/001-core-components/quickstart.md) - Complete usage examples
+- [AI Transformation Quickstart](./specs/001-ai-transformation/quickstart.md) - AI transformation examples
+- [Core Components Quickstart](./specs/001-core-components/quickstart.md) - Complete usage examples
 - [data-model.md](./specs/001-core-components/data-model.md) - Entity definitions
 - [contracts/](./specs/001-core-components/contracts/) - API documentation
+
+## API Reference
+
+### AI Transformation
+
+| Export | Description |
+|--------|-------------|
+| `AITransformer` | Main AI transformation engine |
+| `PromptBuilder` | Builds prompts for Claude API |
+| `ResponseParser` | Parses AI responses |
+| `RetryHandler` | Handles retries with exponential backoff |
+
+### MCP Client
+
+| Export | Description |
+|--------|-------------|
+| `MCPClient` | Connects to MCP server for tool invocation |
+| `ToolRegistry` | Manages registered tools |
+| `ToolInvoker` | Executes tool calls via MCP protocol |
+
+### MCP Tools
+
+| Export | Description |
+|--------|-------------|
+| `CodeAnalyzer` | Validates JavaScript syntax and purity |
+| `DependencyChecker` | Checks npm package availability |
+| `FileSystem` | Reads project files |
+| `TestGenerator` | Generates Jest test code |
+| `getAllTools()` | Returns all available tool definitions |
+| `getToolInstance(name)` | Gets a tool instance by name |
+
+### Error Classes
+
+| Export | Description |
+|--------|-------------|
+| `TransformationError` | General transformation failure |
+| `APIError` | Claude API error |
+| `RateLimitError` | API rate limit exceeded |
+| `InvalidCodeError` | Generated code is invalid |
+| `ToolTimeoutError` | Tool invocation timed out |
+| `ParseError` | Gherkin parsing error |
+| `ContextBuildError` | Project context build error |
+| `CacheError` | Cache operation error |

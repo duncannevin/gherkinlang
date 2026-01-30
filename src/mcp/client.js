@@ -105,7 +105,53 @@ class MCPClient extends EventEmitter {
    * @returns {Promise<void>}
    */
   async disconnect() {
-    // Send shutdown, close streams, kill process, clean up
+    if (!this._connection) {
+      return;
+    }
+
+    try {
+      // Send shutdown request if connected
+      if (this._connection.connected) {
+        /** @type {JSONRPCRequest} */
+        const shutdownRequest = {
+          jsonrpc: '2.0',
+          id: this._connection.requestId++,
+          method: 'shutdown',
+        };
+
+        // Try to send shutdown, but don't wait too long
+        const shutdownPromise = this._sendRequest(shutdownRequest);
+        const timeoutPromise = new Promise((resolve) => setTimeout(resolve, 1000));
+        await Promise.race([shutdownPromise, timeoutPromise]);
+      }
+    } catch (error) {
+      // Ignore errors during shutdown - we're disconnecting anyway
+      this.emit('error', new Error(`Shutdown error: ${error.message}`));
+    }
+
+    // Cancel all pending requests
+    for (const [id, pendingRequest] of this._connection.pendingRequests) {
+      clearTimeout(pendingRequest.timeout);
+      pendingRequest.reject(new Error('Connection closed'));
+    }
+    this._connection.pendingRequests.clear();
+
+    // Close stdin stream
+    if (this._connection.serverProcess?.stdin) {
+      this._connection.serverProcess.stdin.end();
+    }
+
+    // Kill the server process
+    if (this._connection.serverProcess) {
+      this._connection.serverProcess.kill('SIGTERM');
+    }
+
+    // Clear connection state
+    this._connection.connected = false;
+    this._connection.tools.clear();
+    this._connection = null;
+
+    this.emit('disconnected', 0);
   }
 
   /**
