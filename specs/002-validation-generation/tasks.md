@@ -166,11 +166,11 @@
 
 **Purpose**: Integration, documentation, and cleanup
 
-- [ ] T059 [P] Create integration test for full validation→generation pipeline in test/integration/validation-generation/pipeline.test.js
-- [ ] T060 [P] Verify all contracts match implementation (validator.md, generator.md, test-generator.md)
-- [ ] T061 Run quickstart.md verification steps to confirm setup works
-- [ ] T062 Update module exports in src/index.js to expose validation and generation APIs
-- [ ] T063 Add JSDoc comments to all public functions per constitution requirements
+- [x] T059 [P] Create integration test for full validation→generation pipeline in test/integration/validation-generation/pipeline.test.js
+- [x] T060 [P] Verify all contracts match implementation (validator.md, generator.md, test-generator.md)
+- [x] T061 Run quickstart.md verification steps to confirm setup works
+- [x] T062 Update module exports in src/index.js to expose validation and generation APIs
+- [x] T063 Add JSDoc comments to all public functions per constitution requirements
 
 ---
 

@@ -139,7 +139,13 @@ const createFunctionalEslintConfig = () => {
       },
       rules: {
         // Functional programming rules (T022)
-        'functional/immutable-data': 'error',
+        'functional/immutable-data': [
+          'error',
+          {
+            // Allow module.exports and exports.* for CommonJS modules
+            ignoreAccessorPattern: ['module.exports', 'exports.*'],
+          },
+        ],
         'functional/no-loop-statements': 'error',
         'functional/no-this-expressions': 'error',
       },

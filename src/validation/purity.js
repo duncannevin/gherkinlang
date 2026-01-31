@@ -232,6 +232,29 @@ const isAllowedPurePattern = (node) => {
 };
 
 /**
+ * Checks if a statement is at the module level (top-level, not inside a function).
+ *
+ * @param {Object} path - Babel path object
+ * @returns {boolean} True if at module level
+ */
+const isModuleLevelStatement = (path) => {
+  // Walk up to find if we're inside any function
+  let current = path;
+  while (current) {
+    if (
+      current.isFunctionDeclaration() ||
+      current.isFunctionExpression() ||
+      current.isArrowFunctionExpression() ||
+      current.isClassMethod()
+    ) {
+      return false;
+    }
+    current = current.parentPath;
+  }
+  return true;
+};
+
+/**
  * Checks if a node is within a function scope (local variable).
  * Used to allow local mutations within function scope.
  *
@@ -424,6 +447,21 @@ const validatePurity = (ast, code, options = {}) => {
         if (left.type === 'MemberExpression') {
           const objectName =
             left.object.type === 'Identifier' ? left.object.name : null;
+
+          // Allow module.exports assignments for CommonJS modules at module level
+          if (
+            objectName === 'module' &&
+            left.property.type === 'Identifier' &&
+            left.property.name === 'exports' &&
+            isModuleLevelStatement(path)
+          ) {
+            return;
+          }
+
+          // Allow exports.* assignments for CommonJS named exports at module level
+          if (objectName === 'exports' && isModuleLevelStatement(path)) {
+            return;
+          }
 
           // Allow local object mutation within function scope
           if (objectName && isLocalVariable(path, objectName)) {
