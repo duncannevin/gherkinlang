@@ -38,3 +38,4 @@ yarn-error.log*
 /.specify
 /.claude
 /*cache
+CLAUDE.md
