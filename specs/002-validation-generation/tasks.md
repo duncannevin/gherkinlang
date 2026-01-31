@@ -70,10 +70,10 @@
 
 #### Lint Validation (FR-010 to FR-013)
 
-- [ ] T020 [P] [US1] Implement validateLint() function using ESLint programmatic API in src/validation/eslint-config.js
-- [ ] T021 [US1] Configure required rules (no-var, prefer-const, prefer-arrow-callback, no-unused-vars) in src/validation/eslint-config.js
-- [ ] T022 [US1] Add eslint-plugin-functional rules (immutable-data, no-loop-statement, no-this-expression) in src/validation/eslint-config.js
-- [ ] T023 [US1] Support project-specific ESLint config overrides via options in src/validation/eslint-config.js
+- [x] T020 [P] [US1] Implement validateLint() function using ESLint programmatic API in src/validation/eslint-config.js
+- [x] T021 [US1] Configure required rules (no-var, prefer-const, prefer-arrow-callback, no-unused-vars) in src/validation/eslint-config.js
+- [x] T022 [US1] Add eslint-plugin-functional rules (immutable-data, no-loop-statement, no-this-expression) in src/validation/eslint-config.js
+- [x] T023 [US1] Support project-specific ESLint config overrides via options in src/validation/eslint-config.js
 
 #### Validation Pipeline (FR-014 to FR-017a)
 
