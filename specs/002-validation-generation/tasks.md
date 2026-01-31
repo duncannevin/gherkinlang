@@ -138,25 +138,25 @@
 
 #### Type Inference (FR-031a)
 
-- [ ] T046 [P] [US3] Implement inferTypes() function with heuristics in src/generation/test-generator.js
-- [ ] T047 [US3] Add name-based type inference (add→number, concat→string, filter→array) in src/generation/test-generator.js
-- [ ] T048 [US3] Add parameter name-based inference (count→number, text→string, items→array) in src/generation/test-generator.js
+- [x] T046 [P] [US3] Implement inferTypes() function with heuristics in src/generation/test-generator.js
+- [x] T047 [US3] Add name-based type inference (add→number, concat→string, filter→array) in src/generation/test-generator.js
+- [x] T048 [US3] Add parameter name-based inference (count→number, text→string, items→array) in src/generation/test-generator.js
 
 #### Test Case Generation (FR-031 to FR-034)
 
-- [ ] T049 [P] [US3] Implement generateExampleTests() from Gherkin Examples tables in src/generation/test-generator.js
-- [ ] T050 [US3] Implement generateTypeTests() for type validation in src/generation/test-generator.js
-- [ ] T051 [US3] Implement generateEdgeCaseTests() for common edge cases in src/generation/test-generator.js
-- [ ] T052 [US3] Implement generateBoundaryTests() for numeric boundaries in src/generation/test-generator.js
-- [ ] T053 [US3] Implement generateAssertion() for appropriate Jest matchers in src/generation/test-generator.js
+- [x] T049 [P] [US3] Implement generateExampleTests() from Gherkin Examples tables in src/generation/test-generator.js
+- [x] T050 [US3] Implement generateTypeTests() for type validation in src/generation/test-generator.js
+- [x] T051 [US3] Implement generateEdgeCaseTests() for common edge cases in src/generation/test-generator.js
+- [x] T052 [US3] Implement generateBoundaryTests() for numeric boundaries in src/generation/test-generator.js
+- [x] T053 [US3] Implement generateAssertion() for appropriate Jest matchers in src/generation/test-generator.js
 
 #### Test File Generation (FR-029, FR-030, FR-035)
 
-- [ ] T054 [US3] Implement generateTests() main function in src/generation/test-generator.js
-- [ ] T055 [US3] Implement createTestFile() with proper Jest structure in src/generation/test-generator.js
-- [ ] T056 [US3] Implement generateDescribeBlock() for module/function organization in src/generation/test-generator.js
-- [ ] T057 [US3] Implement computeTestPath() mapping .js to .test.js in src/generation/test-generator.js
-- [ ] T058 [US3] Add import statement generation for module under test in src/generation/test-generator.js
+- [x] T054 [US3] Implement generateTests() main function in src/generation/test-generator.js
+- [x] T055 [US3] Implement createTestFile() with proper Jest structure in src/generation/test-generator.js
+- [x] T056 [US3] Implement generateDescribeBlock() for module/function organization in src/generation/test-generator.js
+- [x] T057 [US3] Implement computeTestPath() mapping .js to .test.js in src/generation/test-generator.js
+- [x] T058 [US3] Add import statement generation for module under test in src/generation/test-generator.js
 
 **Checkpoint**: User Story 3 complete - test generator produces valid Jest test files
 
