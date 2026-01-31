@@ -97,32 +97,32 @@
 
 #### JSDoc Generation (FR-025 to FR-028)
 
-- [ ] T029 [P] [US2] Implement generateModuleJSDoc() for @module tags in src/generation/formatters/jsdoc.js
-- [ ] T030 [US2] Implement generateFunctionJSDoc() for @param, @returns, @description in src/generation/formatters/jsdoc.js
-- [ ] T031 [US2] Add type extraction from Gherkin source or inference from implementation in src/generation/formatters/jsdoc.js
-- [ ] T032 [US2] Add @example sections from Gherkin Examples tables in src/generation/formatters/jsdoc.js
+- [x] T029 [P] [US2] Implement generateModuleJSDoc() for @module tags in src/generation/formatters/jsdoc.js
+- [x] T030 [US2] Implement generateFunctionJSDoc() for @param, @returns, @description in src/generation/formatters/jsdoc.js
+- [x] T031 [US2] Add type extraction from Gherkin source or inference from implementation in src/generation/formatters/jsdoc.js
+- [x] T032 [US2] Add @example sections from Gherkin Examples tables in src/generation/formatters/jsdoc.js
 
 #### JavaScript Formatting (FR-022, FR-022a)
 
-- [ ] T033 [P] [US2] Implement formatCode() using Prettier programmatic API in src/generation/formatters/javascript.js
-- [ ] T034 [US2] Add default Prettier config with locked settings for deterministic output in src/generation/formatters/javascript.js
-- [ ] T035 [US2] Implement fallback behavior (write unformatted + warning) on Prettier failure in src/generation/formatters/javascript.js
-- [ ] T036 [US2] Add project .prettierrc detection and merging in src/generation/formatters/javascript.js
+- [x] T033 [P] [US2] Implement formatCode() using Prettier programmatic API in src/generation/formatters/javascript.js
+- [x] T034 [US2] Add default Prettier config with locked settings for deterministic output in src/generation/formatters/javascript.js
+- [x] T035 [US2] Implement fallback behavior (write unformatted + warning) on Prettier failure in src/generation/formatters/javascript.js
+- [x] T036 [US2] Add project .prettierrc detection and merging in src/generation/formatters/javascript.js
 
 #### Module Export Handling (FR-019 to FR-021)
 
-- [ ] T037 [US2] Implement wrapWithExports() for CommonJS (module.exports) in src/generation/generator.js
-- [ ] T038 [US2] Implement wrapWithExports() for ES Modules (export default, named exports) in src/generation/generator.js
-- [ ] T039 [US2] Implement resolveImports() for cross-module dependencies in src/generation/generator.js
+- [x] T037 [US2] Implement wrapWithExports() for CommonJS (module.exports) in src/generation/generator.js
+- [x] T038 [US2] Implement wrapWithExports() for ES Modules (export default, named exports) in src/generation/generator.js
+- [x] T039 [US2] Implement resolveImports() for cross-module dependencies in src/generation/generator.js
 
 #### File Generation (FR-018, FR-023, FR-023a, FR-024)
 
-- [ ] T040 [US2] Implement generate() main function in src/generation/generator.js
-- [ ] T041 [US2] Add output directory creation (ensureOutputDir) in src/generation/generator.js
-- [ ] T042 [US2] Implement file locking using proper-lockfile for concurrent writes in src/generation/generator.js
-- [ ] T043 [US2] Implement computeOutputPath() mapping .feature to .js in src/generation/generator.js
-- [ ] T044 [US2] Integrate JSDoc generation before export wrapping in src/generation/generator.js
-- [ ] T045 [US2] Integrate Prettier formatting before file write in src/generation/generator.js
+- [x] T040 [US2] Implement generate() main function in src/generation/generator.js
+- [x] T041 [US2] Add output directory creation (ensureOutputDir) in src/generation/generator.js
+- [x] T042 [US2] Implement file locking using proper-lockfile for concurrent writes in src/generation/generator.js
+- [x] T043 [US2] Implement computeOutputPath() mapping .feature to .js in src/generation/generator.js
+- [x] T044 [US2] Integrate JSDoc generation before export wrapping in src/generation/generator.js
+- [x] T045 [US2] Integrate Prettier formatting before file write in src/generation/generator.js
 
 **Checkpoint**: User Story 2 complete - generator writes formatted JavaScript with JSDoc to output directory
 

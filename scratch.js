@@ -1,90 +1,122 @@
-// Run in Node.js REPL: node
-// Or copy-paste the entire block below
+// Run: node
+// Then paste this script
 
-const { validate, isValid, validateSyntaxOnly } = require('./src/validation/validator');
+const { generate, wrapWithExports, resolveImports, computeOutputPath } = require('./src/generation/generator');
+const { generateFunctionJSDoc, generateModuleJSDoc, inferTypeFromName } = require('./src/generation/formatters/jsdoc');
+const { formatCode, getDefaultConfig } = require('./src/generation/formatters/javascript');
 
 async function demo() {
-  console.log('=== GherkinLang Validator Demo ===\n');
+  console.log('=== GherkinLang Code Generator Demo ===\n');
 
-  // Test 1: Valid pure code
-  console.log('1. Valid pure code:');
-  const validCode = `
+  // 1. JSDoc Generation
+  console.log('1. JSDoc Generation:');
+  const moduleDoc = generateModuleJSDoc('MathUtils', 'Pure mathematical utility functions');
+  console.log(moduleDoc);
+  console.log();
+
+  const funcDoc = generateFunctionJSDoc('add', {
+    description: 'Adds two numbers together',
+    params: [
+      { name: 'a', type: 'number', description: 'First number' },
+      { name: 'b', type: 'number', description: 'Second number' },
+    ],
+    returnType: 'number',
+    returnDescription: 'The sum of a and b',
+    examples: [{
+      name: 'Basic usage',
+      rows: [
+        { a: 1, b: 2, result: 3 },
+        { a: 10, b: 20, result: 30 },
+      ],
+    }],
+  });
+  console.log('Function JSDoc:');
+  console.log(funcDoc);
+  console.log();
+
+  // 2. Type Inference
+  console.log('2. Type Inference from Parameter Names:');
+  const names = ['count', 'name', 'isValid', 'items', 'callback'];
+  names.forEach((n) => console.log(`  ${n} => ${inferTypeFromName(n)}`));
+  console.log();
+
+  // 3. Module Exports
+  console.log('3. Module Export Wrapping:');
+  const code = 'const add = (a, b) => a + b;\nconst multiply = (x, y) => x * y;';
+  const exports = [
+    { name: 'add', exportType: 'named' },
+    { name: 'multiply', exportType: 'named' },
+  ];
+
+  console.log('CommonJS:');
+  console.log(wrapWithExports(code, exports, 'cjs'));
+  console.log();
+
+  console.log('ES Modules:');
+  console.log(wrapWithExports(code, exports, 'esm'));
+  console.log();
+
+  // 4. Import Resolution
+  console.log('4. Import Resolution:');
+  const deps = [
+    { modulePath: './utils', named: ['helper', 'validate'] },
+    { modulePath: 'lodash', default: '_' },
+  ];
+  console.log('CommonJS imports:');
+  console.log(resolveImports(deps, 'cjs'));
+  console.log();
+  console.log('ESM imports:');
+  console.log(resolveImports(deps, 'esm'));
+  console.log();
+
+  // 5. Output Path Computation
+  console.log('5. Output Path Computation:');
+  console.log(`  math.feature => ${computeOutputPath('features/math.feature', 'dist')}`);
+  console.log(`  project/utils.feature => ${computeOutputPath('features/project/utils.feature', 'output')}`);
+  console.log();
+
+  // 6. Full Generation Pipeline (dry run)
+  console.log('6. Full Generation Pipeline:');
+  const validatedCode = `
 const add = (a, b) => a + b;
-const multiply = (x, y) => x * y;
-const compose = (f, g) => (x) => f(g(x));
-`;
-  const result1 = await validate(validCode, { skipLint: true });
-  console.log('   Valid:', result1.valid);
-  console.log('   Duration:', result1.duration + 'ms');
-  console.log('   Syntax valid:', result1.syntax.valid);
-  console.log('   Purity valid:', result1.purity.valid);
+const subtract = (a, b) => a - b;
+const multiply = (a, b) => a * b;
+  `.trim();
+
+  const context = {
+    sourcePath: 'features/math.feature',
+    featureName: 'MathOperations',
+    scenarios: [
+      { name: 'Add two numbers', description: 'Adds two numbers together' },
+    ],
+    dependencies: [
+      { modulePath: './helpers', named: ['validate'] },
+    ],
+  };
+
+  const result = await generate(validatedCode, context, {
+    outputDir: '/tmp/gherkin-demo',
+    moduleFormat: 'cjs',
+    dryRun: true, // Don't write to disk
+  });
+
+  console.log('Generated Module:');
+  console.log('  Source:', result.sourcePath);
+  console.log('  Output:', result.outputPath);
+  console.log('  Exports:', result.exports.map((e) => e.name).join(', '));
+  console.log('  Formatted:', result.formatted);
   console.log();
+  console.log('Generated Code:');
+  console.log('---');
+  console.log(result.formattedCode);
+  console.log('---');
 
-  // Test 2: Syntax error (fail-fast)
-  console.log('2. Syntax error (fail-fast):');
-  const syntaxError = 'const x = ;';
-  const result2 = await validate(syntaxError);
-  console.log('   Valid:', result2.valid);
-  console.log('   Purity check ran:', result2.purity !== null);
-  console.log('   Lint check ran:', result2.lint !== null);
-  console.log('   Error:', result2.errors[0].message);
-  console.log();
+  // 7. Prettier Config
+  console.log('\n7. Default Prettier Config:');
+  const config = getDefaultConfig();
+  console.log(JSON.stringify(config, null, 2));
 
-  // Test 3: Purity violation (console.log)
-  console.log('3. Purity violation (side effect):');
-  const impureCode = 'const fn = () => { console.log("hello"); return 42; };';
-  const result3 = await validate(impureCode, { skipLint: true });
-  console.log('   Valid:', result3.valid);
-  console.log('   Purity errors:', result3.purity?.violations.length);
-  console.log('   Error:', (result3.errors ?? []).find(e => e.type === 'purity')?.message);
-  console.log();
-
-  // Test 4: Mutation detection
-  console.log('4. Mutation detection:');
-  const mutationCode = 'const fn = (arr) => { arr.push(1); return arr; };';
-  const result4 = await validate(mutationCode, { skipLint: true });
-  console.log('   Valid:', result4.valid);
-  console.log('   Pattern detected:', result4.purity?.violations[0].pattern);
-  console.log('   Suggestion:', result4.errors[0].suggestion);
-  console.log();
-
-  // Test 5: Lint violation (no-var)
-  console.log('5. Lint violation:');
-  const lintViolation = 'var x = 1;';
-  const result5 = await validate(lintViolation);
-  console.log('   Valid:', result5.valid);
-  console.log('   Lint errors:', result5.lint?.errorCount);
-  console.log('   Rule:', result5.errors.find(e => e.type === 'lint')?.rule);
-  console.log();
-
-  // Test 6: Complex pure functional code
-  console.log('6. Complex pure functional code:');
-  const functionalCode = `
-const curry = (fn) => {
-  const arity = fn.length;
-  const curried = (...args) =>
-    args.length >= arity ? fn(...args) : (...more) => curried(...args, ...more);
-  return curried;
-};
-
-const pipe = (...fns) => (x) => fns.reduce((acc, fn) => fn(acc), x);
-const map = (fn) => (arr) => arr.map(fn);
-const filter = (pred) => (arr) => arr.filter(pred);
-`;
-  const result6 = await validate(functionalCode, { skipLint: true });
-  console.log('   Valid:', result6.valid);
-  console.log('   Duration:', result6.duration + 'ms');
-  console.log('   Syntax valid:', result6.syntax.valid);
-  console.log('   Purity valid:', result6.purity.valid);
-  console.log();
-
-  // Test 7: Quick validity check
-  console.log('7. Quick validity check (isValid):');
-  console.log('   Pure code:', await isValid('(() => 42)();'));
-  console.log('   Impure code:', await isValid('console.log("hi");', { skipLint: true }));
-  console.log();
-
-  console.log('=== Demo Complete ===');
+  console.log('\n=== Demo Complete ===');
 }
 
 demo().catch(console.error);
