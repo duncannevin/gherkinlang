@@ -77,11 +77,11 @@
 
 #### Validation Pipeline (FR-014 to FR-017a)
 
-- [ ] T024 [US1] Implement validate() orchestrator function in src/validation/validator.js
-- [ ] T025 [US1] Implement fail-fast logic (skip purity/lint if syntax fails) in src/validation/validator.js
-- [ ] T026 [US1] Implement aggregateErrors() to combine all validation results in src/validation/validator.js
-- [ ] T027 [US1] Add duration tracking for performance metrics in src/validation/validator.js
-- [ ] T028 [US1] Ensure no auto-fix behavior - return errors for AI retry in src/validation/validator.js
+- [x] T024 [US1] Implement validate() orchestrator function in src/validation/validator.js
+- [x] T025 [US1] Implement fail-fast logic (skip purity/lint if syntax fails) in src/validation/validator.js
+- [x] T026 [US1] Implement aggregateErrors() to combine all validation results in src/validation/validator.js
+- [x] T027 [US1] Add duration tracking for performance metrics in src/validation/validator.js
+- [x] T028 [US1] Ensure no auto-fix behavior - return errors for AI retry in src/validation/validator.js
 
 **Checkpoint**: User Story 1 complete - validator accepts code string and returns ValidationResult
 

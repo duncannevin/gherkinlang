@@ -604,13 +604,15 @@ const validatePurity = (ast, code, options = {}) => {
         // Check for mutating array methods
         const mutatingArrayMethod = getMutatingArrayMethod(path.node);
         if (mutatingArrayMethod) {
-          // Check if it's on a local variable (allowed)
+          // Check if it's on a local variable (allowed) BUT NOT a parameter
+          // Mutating a parameter still mutates an external object
           if (
             path.node.callee.type === 'MemberExpression' &&
             path.node.callee.object.type === 'Identifier'
           ) {
             const objectName = path.node.callee.object.name;
-            if (isLocalVariable(path, objectName)) {
+            // Only allow mutation if it's a local variable AND not a parameter
+            if (isLocalVariable(path, objectName) && !isFunctionParameter(path, objectName)) {
               return;
             }
           }
