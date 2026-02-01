@@ -72,3 +72,9 @@ Background:
     When let numbers = _.range(2, max + 1)
     And filter numbers where isPrime(number)
     Then return result
+  
+  Scenario: sum defines a function
+    Given function sum accepts list
+    When list matches
+    | []          | 0                | 
+    | [head|tail] | head + sum(tail) |

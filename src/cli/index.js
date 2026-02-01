@@ -16,6 +16,7 @@ import { fileURLToPath } from 'url';
 import { createLogger } from './utils/logger.js';
 import { CONFIG_FILE_NAME, DEFAULT_CONFIG, EXIT_CODES } from './constants.js';
 import { register as registerCompile } from './commands/compile.js';
+import { register as registerWatch } from './commands/watch.js';
 
 // Get package.json for version
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -138,13 +139,6 @@ export const createContext = (config, configPath, options, args = []) => {
 
   const abortController = new AbortController();
 
-  // Handle SIGINT/SIGTERM
-  const cleanup = () => {
-    abortController.abort();
-  };
-  process.on('SIGINT', cleanup);
-  process.on('SIGTERM', cleanup);
-
   return {
     config,
     configPath,
@@ -179,21 +173,49 @@ export const createProgram = () => {
   // Compile command
   registerCompile(program);
 
-  // Watch command (stub - will be implemented in Phase 4)
+  // Watch command
+  registerWatch(program);
+
+  // Start command - convenience for compile + watch on features/
   program
-    .command('watch <dir>')
-    .description('Watch directory and recompile on changes')
-    .option('--initial', 'Compile all files before watching')
-    .option('--debounce <ms>', 'Debounce delay in milliseconds', '100')
+    .command('start')
+    .description('Compile and watch the features directory')
+    .option('-d, --dir <dir>', 'Directory to watch', 'features')
     .option('-o, --output <dir>', 'Output directory')
     .option('-f, --format <format>', 'Module format: commonjs, esm')
     .option('-t, --target <lang>', 'Target language: javascript, elixir')
     .option('--no-cache', 'Bypass compilation cache')
     .option('--no-tests', 'Skip test generation')
-    .action(async (dir, options) => {
-      const logger = createLogger({ noColor: program.opts().noColor });
-      logger.error('Watch command not yet implemented. See Phase 4.');
-      process.exit(EXIT_CODES.ERROR);
+    .option('--debounce <ms>', 'Debounce delay in milliseconds', '100')
+    .action(async (options, command) => {
+      const globalOpts = command.parent?.opts() || {};
+      const { execute } = await import('./commands/watch.js');
+
+      try {
+        // Load configuration
+        const { config, path: configPath } = await loadConfig(process.cwd());
+        const mergedConfig = mergeOptions(config, { ...globalOpts, ...options });
+
+        // Create context
+        const context = createContext(
+          mergedConfig,
+          configPath,
+          { ...globalOpts, ...options },
+          [options.dir]
+        );
+
+        // Execute watch with initial compile
+        await execute(options.dir, { ...globalOpts, ...options, initial: true }, context);
+
+        process.exit(EXIT_CODES.SUCCESS);
+      } catch (error) {
+        const logger = createLogger({ noColor: globalOpts.noColor });
+        logger.error(error.message);
+        if (globalOpts.verbose) {
+          console.error(error.stack);
+        }
+        process.exit(EXIT_CODES.ERROR);
+      }
     });
 
   // Init command (stub - will be implemented in Phase 5)

@@ -1,1 +1,0 @@
-Scenario: Some scenario

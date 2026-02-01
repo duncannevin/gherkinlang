@@ -1,7 +1,7 @@
 /**
  * Auto-generated tests for shopping_cart
  * Source: dist/shopping_cart.js
- * Generated: 2026-02-01T01:06:42.316Z
+ * Generated: 2026-02-01T01:49:11.688Z
  */
 
 const { item_total, subtotal, apply_discount, in_stock, expensive_items, total_with_tax, total_quantity } = require('../../dist/shopping_cart');

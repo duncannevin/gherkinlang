@@ -1,7 +1,7 @@
 /**
  * Auto-generated tests for mathematics
  * Source: dist/mathematics.js
- * Generated: 2026-02-01T01:06:34.370Z
+ * Generated: 2026-02-01T01:49:03.864Z
  */
 
 const { add, subtract, multiply, divide, sum, average, factorial, isPrime, checkDivisors, getPrimes } = require('../../dist/mathematics');

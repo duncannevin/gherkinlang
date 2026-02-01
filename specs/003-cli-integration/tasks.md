@@ -80,17 +80,17 @@
 
 ### Implementation for User Story 2
 
-- [ ] T024 [US2] Implement register() function with command signature in src/cli/commands/watch.js
-- [ ] T025 [US2] Implement createWatcher() with chokidar setup in src/cli/commands/watch.js
-- [ ] T026 [US2] Implement debounce logic for rapid file changes in src/cli/commands/watch.js
-- [ ] T027 [US2] Implement getFilesToRecompile() using dependency graph in src/cli/commands/watch.js
-- [ ] T028 [US2] Implement handleEvent() for add/change/unlink events in src/cli/commands/watch.js
-- [ ] T029 [US2] Implement WatchState tracking (pending files, statistics) in src/cli/commands/watch.js
-- [ ] T030 [US2] Implement signal handling (SIGINT/SIGTERM) with graceful shutdown in src/cli/commands/watch.js
-- [ ] T031 [US2] Implement shutdown() with summary display in src/cli/commands/watch.js
-- [ ] T032 [US2] Implement execute() orchestrating watch loop in src/cli/commands/watch.js
-- [ ] T033 [US2] Add watch command options (--initial, --debounce, plus compile options) in src/cli/commands/watch.js
-- [ ] T034 [US2] Wire watch command registration in src/cli/index.js
+- [x] T024 [US2] Implement register() function with command signature in src/cli/commands/watch.js
+- [x] T025 [US2] Implement createWatcher() with chokidar setup in src/cli/commands/watch.js
+- [x] T026 [US2] Implement debounce logic for rapid file changes in src/cli/commands/watch.js
+- [x] T027 [US2] Implement getFilesToRecompile() using dependency graph in src/cli/commands/watch.js
+- [x] T028 [US2] Implement handleEvent() for add/change/unlink events in src/cli/commands/watch.js
+- [x] T029 [US2] Implement WatchState tracking (pending files, statistics) in src/cli/commands/watch.js
+- [x] T030 [US2] Implement signal handling (SIGINT/SIGTERM) with graceful shutdown in src/cli/commands/watch.js
+- [x] T031 [US2] Implement shutdown() with summary display in src/cli/commands/watch.js
+- [x] T032 [US2] Implement execute() orchestrating watch loop in src/cli/commands/watch.js
+- [x] T033 [US2] Add watch command options (--initial, --debounce, plus compile options) in src/cli/commands/watch.js
+- [x] T034 [US2] Wire watch command registration in src/cli/index.js
 
 **Checkpoint**: User Story 2 complete - `gherkin watch features/` auto-recompiles on changes
 
