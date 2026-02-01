@@ -148,25 +148,43 @@ const ensureOutputDir = async (outputDir) => {
 /**
  * Ensures a package.json exists in the output directory for CommonJS modules.
  * This allows .js files to be treated as CommonJS even in an ESM project.
+ * Also adds external dependencies to the package.json.
  *
  * @param {string} outputDir - Output directory path
  * @param {'cjs' | 'esm'} moduleFormat - Module format
+ * @param {string[]} [externalDeps=[]] - External package dependencies to add
  * @returns {Promise<void>}
  */
-const ensureOutputPackageJson = async (outputDir, moduleFormat) => {
-  if (moduleFormat !== 'cjs') {
-    return;
-  }
-
+const ensureOutputPackageJson = async (outputDir, moduleFormat, externalDeps = []) => {
   const pkgPath = path.join(outputDir, 'package.json');
 
+  let pkg = {};
+
+  // Try to read existing package.json
   try {
-    await fs.access(pkgPath);
-    // File exists, don't overwrite
+    const content = await fs.readFile(pkgPath, 'utf8');
+    pkg = JSON.parse(content);
   } catch {
-    // File doesn't exist, create it
-    await fs.writeFile(pkgPath, JSON.stringify({ type: 'commonjs' }, null, 2) + '\n', 'utf8');
+    // File doesn't exist or is invalid, start fresh
   }
+
+  // Set type for CommonJS
+  if (moduleFormat === 'cjs') {
+    pkg.type = 'commonjs';
+  }
+
+  // Add external dependencies
+  if (externalDeps.length > 0) {
+    pkg.dependencies = pkg.dependencies || {};
+    for (const dep of externalDeps) {
+      if (!pkg.dependencies[dep]) {
+        pkg.dependencies[dep] = '*'; // Use * to indicate "any version"
+      }
+    }
+  }
+
+  // Write updated package.json
+  await fs.writeFile(pkgPath, JSON.stringify(pkg, null, 2) + '\n', 'utf8');
 };
 
 /**
@@ -502,6 +520,7 @@ const generate = async (validatedCode, context, options = {}) => {
     dryRun = false,
     skipFormat = false,
     prettierConfig,
+    externalDeps = [],
   } = options;
 
   // Normalize module format (commonjs -> cjs)
@@ -573,7 +592,7 @@ const generate = async (validatedCode, context, options = {}) => {
   // Write to disk (unless dry run)
   if (!dryRun) {
     await ensureOutputDir(outputDir);
-    await ensureOutputPackageJson(outputDir, moduleFormat);
+    await ensureOutputPackageJson(outputDir, moduleFormat, externalDeps);
 
     // Acquire lock
     const release = await acquireLock(outputPath);

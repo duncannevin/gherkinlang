@@ -237,18 +237,35 @@ export const compileFile = async (file, options, context) => {
     const moduleFormat = options.format || config.moduleFormat;
     const normalizedFormat = moduleFormat === 'commonjs' ? 'cjs' : moduleFormat;
 
-    // Convert parsed imports (strings) to dependency objects
-    // e.g., 'UserManagement' -> { modulePath: './user_management', default: 'UserManagement' }
-    const dependencies = (parsed.imports || []).map(name => {
-      // Convert PascalCase to snake_case for file path
-      const snakeCase = name
-        .replace(/([a-z])([A-Z])/g, '$1_$2')
-        .toLowerCase();
-      return {
-        modulePath: `./${snakeCase}`,
-        default: name,
-      };
+    // Convert parsed imports to dependency objects
+    // Imports are now objects: { name, alias, isExternal }
+    const dependencies = (parsed.imports || []).map(imp => {
+      // Handle both old string format and new object format
+      if (typeof imp === 'string') {
+        const snakeCase = imp.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
+        return { modulePath: `./${snakeCase}`, default: imp };
+      }
+      
+      if (imp.isExternal) {
+        // External package (e.g., lodash)
+        return {
+          modulePath: imp.name,
+          default: imp.alias,
+        };
+      } else {
+        // Local module - convert PascalCase to snake_case
+        const snakeCase = imp.name.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase();
+        return {
+          modulePath: `./${snakeCase}`,
+          default: imp.alias,
+        };
+      }
     });
+    
+    // Collect external dependencies for package.json
+    const externalDeps = (parsed.imports || [])
+      .filter(imp => typeof imp === 'object' && imp.isExternal)
+      .map(imp => imp.name);
 
     const generationContext = {
       sourcePath: file,
@@ -263,6 +280,7 @@ export const compileFile = async (file, options, context) => {
       outputDir,
       moduleFormat: normalizedFormat,
       skipFormat: !config.generation.prettier,
+      externalDeps,
     });
 
     result.success = true;

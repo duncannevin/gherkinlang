@@ -103,9 +103,27 @@ class GherkinParser {
 
         for (const l of lines) {
             const line = l.trim();
+            
+            // Match: Given import lodash as _
+            const aliasMatch = line.match(/^Given\s+import\s+(\S+)\s+as\s+(\w+)$/i);
+            if (aliasMatch) {
+                imports.push({
+                    name: aliasMatch[1],
+                    alias: aliasMatch[2],
+                    isExternal: !aliasMatch[1].match(/^[A-Z]/), // lowercase = external package
+                });
+                continue;
+            }
+            
+            // Match: Given import ModuleName
             const importMatch = line.match(/^Given\s+import\s+(\w+)$/i);
             if (importMatch) {
-                imports.push(importMatch[1]); // Remove "Given import <moduleName>" prefix
+                const name = importMatch[1];
+                imports.push({
+                    name,
+                    alias: name,
+                    isExternal: !name.match(/^[A-Z]/), // lowercase = external package
+                });
             }
         }
         return {

@@ -51,24 +51,24 @@ Background:
       |_| n * factorial(n-1)|
     Then return result
 
-Scenario: isPrime defines a function
-  Given function isPrime accepts n
-  When n matches
-    | n < 2        | false                                    |
-    | n === 2      | true                                     |
-    | n % 2 === 0  | false                                    |
-    | _            | checkDivisors(n)                         |
-  Then return result
+  Scenario: isPrime defines a function
+    Given function isPrime accepts n
+    When n matches
+      | n < 2        | false                                    |
+      | n === 2      | true                                     |
+      | n % 2 === 0  | false                                    |
+      | _            | checkDivisors(n)                         |
+    Then return result
 
-Scenario: checkDivisors defines a function
-  Given function checkDivisors accepts n
-  When let limit = Math.floor(Math.sqrt(n))
-  And let divisors = _.range(3, limit + 1, 2)
-  And let noDivisors = _.every(divisors, d => n % d !== 0)
-  Then return noDivisors
+  Scenario: checkDivisors defines a function
+    Given function checkDivisors accepts n
+    When let limit = Math.floor(Math.sqrt(n))
+    And let divisors = _.range(3, limit + 1, 2)
+    And let noDivisors = _.every(divisors, d => n % d !== 0)
+    Then return noDivisors
 
-Scenario: getPrimes defines a function
-  Given function getPrimes accepts max
-  When let numbers = _.range(2, max + 1)
-  And filter numbers where isPrime(number)
-  Then return result
+  Scenario: getPrimes defines a function
+    Given function getPrimes accepts max
+    When let numbers = _.range(2, max + 1)
+    And filter numbers where isPrime(number)
+    Then return result

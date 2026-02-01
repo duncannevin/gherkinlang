@@ -1,7 +1,7 @@
 /**
  * Auto-generated tests for user_management
  * Source: dist/user_management.js
- * Generated: 2026-02-01T01:01:37.963Z
+ * Generated: 2026-02-01T01:06:55.563Z
  */
 
 const { adults, emails, adult_emails, sort_by_age, find_by_id, average_age } = require('../../dist/user_management');
