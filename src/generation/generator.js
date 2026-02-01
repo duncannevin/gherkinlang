@@ -8,11 +8,10 @@
  * @module generation/generator
  */
 
-const fs = require('fs').promises;
-const path = require('path');
-const { formatCode } = require('./formatters/javascript');
-const { generateFunctionJSDoc, generateModuleJSDoc } = require('./formatters/jsdoc');
-const { createEmptyModule, createModuleExport } = require('./types');
+import fs from 'fs/promises';
+import path from 'path';
+import { formatCode } from './formatters/javascript.js';
+import { createEmptyModule, createModuleExport } from './types.js';
 
 /**
  * @typedef {import('./types').GeneratedModule} GeneratedModule
@@ -147,18 +146,46 @@ const ensureOutputDir = async (outputDir) => {
 };
 
 /**
+ * Ensures a package.json exists in the output directory for CommonJS modules.
+ * This allows .js files to be treated as CommonJS even in an ESM project.
+ *
+ * @param {string} outputDir - Output directory path
+ * @param {'cjs' | 'esm'} moduleFormat - Module format
+ * @returns {Promise<void>}
+ */
+const ensureOutputPackageJson = async (outputDir, moduleFormat) => {
+  if (moduleFormat !== 'cjs') {
+    return;
+  }
+
+  const pkgPath = path.join(outputDir, 'package.json');
+
+  try {
+    await fs.access(pkgPath);
+    // File exists, don't overwrite
+  } catch {
+    // File doesn't exist, create it
+    await fs.writeFile(pkgPath, JSON.stringify({ type: 'commonjs' }, null, 2) + '\n', 'utf8');
+  }
+};
+
+/**
  * Computes the output path from a source .feature file path.
  *
  * @param {string} sourcePath - Original .feature file path
  * @param {string} outputDir - Output directory
- * @returns {string} Output .js file path
+ * @param {'cjs' | 'esm'} [moduleFormat='esm'] - Module format
+ * @returns {string} Output file path (.cjs for CommonJS, .js for ESM)
  *
  * @example
- * computeOutputPath('features/math.feature', 'dist')
+ * computeOutputPath('features/math.feature', 'dist', 'esm')
  * // => 'dist/math.js'
+ * computeOutputPath('features/math.feature', 'dist', 'cjs')
+ * // => 'dist/math.cjs'
  */
-const computeOutputPath = (sourcePath, outputDir) => {
+const computeOutputPath = (sourcePath, outputDir, moduleFormat = 'esm') => {
   const basename = path.basename(sourcePath, '.feature');
+  // Always use .js extension
   return path.join(outputDir, `${basename}.js`);
 };
 
@@ -187,6 +214,11 @@ const resolveImports = (dependencies, moduleFormat) => {
   const lines = [];
 
   for (const dep of dependencies) {
+    // Skip invalid dependencies
+    if (!dep || !dep.modulePath) {
+      continue;
+    }
+
     if (moduleFormat === 'esm') {
       lines.push(generateESMImport(dep));
     } else {
@@ -206,16 +238,8 @@ const resolveImports = (dependencies, moduleFormat) => {
 const generateESMImport = (dep) => {
   const parts = [];
 
-  // Add .js extension for ESM if not present (only for relative paths)
-  let modulePath = dep.modulePath;
-  const isRelative = modulePath.startsWith('./') || modulePath.startsWith('../');
-  const isScoped = modulePath.startsWith('@');
-  const hasExtension = modulePath.endsWith('.js') || modulePath.endsWith('.mjs');
-
-  if (isRelative && !hasExtension) {
-    modulePath = `${modulePath}.js`;
-  }
-  // Don't add .js for node_modules packages (non-relative, non-scoped or scoped)
+  // Use module path as-is (no automatic extension adding)
+  const modulePath = dep.modulePath;
 
   // Default import
   if (dep.default) {
@@ -276,6 +300,67 @@ const generateCJSImport = (dep) => {
 
   // Side-effect only
   return `require('${modulePath}');`;
+};
+
+/**
+ * Strips existing import statements from code.
+ * This cleans up AI-generated code that may include its own imports.
+ *
+ * @param {string} code - JavaScript code that may contain import statements
+ * @returns {string} Code with imports removed
+ */
+const stripImports = (code) => {
+  let result = code;
+
+  // Remove ESM import statements
+  // import X from 'module';
+  // import { X } from 'module';
+  // import * as X from 'module';
+  // import 'module';
+  result = result.replace(/^import\s+.*?from\s+['"][^'"]+['"];\s*$/gm, '');
+  result = result.replace(/^import\s+['"][^'"]+['"];\s*$/gm, '');
+
+  // Remove CommonJS require statements (const X = require('module'))
+  result = result.replace(/^(?:const|let|var)\s+\w+\s*=\s*require\s*\([^)]+\);\s*$/gm, '');
+  result = result.replace(/^(?:const|let|var)\s+\{[^}]+\}\s*=\s*require\s*\([^)]+\);\s*$/gm, '');
+  result = result.replace(/^require\s*\([^)]+\);\s*$/gm, '');
+
+  // Clean up any duplicate blank lines created
+  result = result.replace(/\n{3,}/g, '\n\n');
+
+  return result.trim();
+};
+
+/**
+ * Strips existing export statements from code.
+ * This cleans up AI-generated code that may include its own exports.
+ *
+ * @param {string} code - JavaScript code that may contain export statements
+ * @returns {string} Code with exports removed
+ */
+const stripExports = (code) => {
+  let result = code;
+
+  // Remove inline `export ` before const/let/var/function declarations
+  result = result.replace(/^export\s+(const|let|var|function|async\s+function)\s+/gm, '$1 ');
+
+  // Remove `export default { ... };` blocks
+  result = result.replace(/^export\s+default\s+\{[^}]*\};\s*$/gm, '');
+
+  // Remove `export { ... };` blocks
+  result = result.replace(/^export\s+\{[^}]*\};\s*$/gm, '');
+
+  // Remove `module.exports = ...;` statements
+  result = result.replace(/^module\.exports\s*=\s*\{[^}]*\};\s*$/gm, '');
+  result = result.replace(/^module\.exports\s*=\s*\w+;\s*$/gm, '');
+
+  // Remove `exports.name = ...;` statements
+  result = result.replace(/^exports\.\w+\s*=\s*[^;]+;\s*$/gm, '');
+
+  // Clean up any duplicate blank lines created
+  result = result.replace(/\n{3,}/g, '\n\n');
+
+  return result.trim();
 };
 
 /**
@@ -413,48 +498,30 @@ const extractExportsFromCode = (code) => {
 const generate = async (validatedCode, context, options = {}) => {
   const {
     outputDir = 'dist',
-    moduleFormat = 'cjs',
+    moduleFormat: rawModuleFormat = 'cjs',
     dryRun = false,
     skipFormat = false,
     prettierConfig,
   } = options;
 
-  const { sourcePath, featureName, scenarios, examples, dependencies, config } = context;
+  // Normalize module format (commonjs -> cjs)
+  const moduleFormat = rawModuleFormat === 'commonjs' ? 'cjs' : rawModuleFormat;
 
-  // Compute output path
-  const outputPath = computeOutputPath(sourcePath, outputDir);
+  const { sourcePath, dependencies } = context;
+
+  // Compute output path (uses .cjs for CommonJS, .js for ESM)
+  const outputPath = computeOutputPath(sourcePath, outputDir, moduleFormat);
 
   // Create result structure
   const result = createEmptyModule(sourcePath, outputPath);
 
-  // Extract or use provided exports
+  // Extract exports from the original code
   let exports = extractExportsFromCode(validatedCode);
 
-  // Generate JSDoc for module
-  const moduleJSDoc = generateModuleJSDoc(featureName, config?.description);
-
-  // Generate JSDoc for each exported function
-  const functionJSDocs = [];
-  for (const exp of exports) {
-    const scenario = scenarios?.find((s) =>
-      s.name?.toLowerCase().includes(exp.name.toLowerCase())
-    );
-
-    const examplesForFunc = examples?.filter((e) =>
-      e.name?.toLowerCase().includes(exp.name.toLowerCase())
-    ) || [];
-
-    const jsdoc = generateFunctionJSDoc(exp.name, {
-      description: exp.description,
-      params: exp.params || [],
-      returnType: exp.returnType,
-      examples: examplesForFunc,
-      scenario,
-    });
-
-    exp.jsdoc = jsdoc;
-    functionJSDocs.push({ name: exp.name, jsdoc });
-  }
+  // Strip any existing imports and exports from the AI-generated code
+  // The generator will add proper imports at the top and exports at the end
+  const codeWithoutImports = stripImports(validatedCode);
+  const cleanedCode = stripExports(codeWithoutImports);
 
   result.exports = exports;
 
@@ -467,34 +534,11 @@ const generate = async (validatedCode, context, options = {}) => {
     namespace: d.namespace,
   })) || [];
 
-  // Inject JSDoc comments before function declarations
-  let codeWithJSDoc = validatedCode;
-  for (const { name, jsdoc } of functionJSDocs) {
-    // Find function declaration and prepend JSDoc
-    const patterns = [
-      new RegExp(`(const\\s+${name}\\s*=)`, 'g'),
-      new RegExp(`(let\\s+${name}\\s*=)`, 'g'),
-      new RegExp(`(var\\s+${name}\\s*=)`, 'g'),
-      new RegExp(`(function\\s+${name}\\s*\\()`, 'g'),
-    ];
-
-    for (const pattern of patterns) {
-      if (pattern.test(codeWithJSDoc)) {
-        codeWithJSDoc = codeWithJSDoc.replace(pattern, `${jsdoc}\n$1`);
-        break;
-      }
-    }
-  }
-
-  // Wrap with exports
-  const codeWithExports = wrapWithExports(codeWithJSDoc, exports, moduleFormat);
+  // Wrap with exports (AI already generates JSDoc, so we just add exports)
+  const codeWithExports = wrapWithExports(cleanedCode, exports, moduleFormat);
 
   // Combine all parts
   const parts = [];
-
-  // Add module JSDoc at top
-  parts.push(moduleJSDoc);
-  parts.push('');
 
   // Add imports
   if (importsSection) {
@@ -529,6 +573,7 @@ const generate = async (validatedCode, context, options = {}) => {
   // Write to disk (unless dry run)
   if (!dryRun) {
     await ensureOutputDir(outputDir);
+    await ensureOutputPackageJson(outputDir, moduleFormat);
 
     // Acquire lock
     const release = await acquireLock(outputPath);
@@ -563,10 +608,12 @@ const generateBatch = async (items, options = {}) => {
   return results;
 };
 
-module.exports = {
+export {
   generate,
   generateBatch,
   // Export utilities for testing and extension
+  stripImports,
+  stripExports,
   wrapWithExports,
   wrapWithESMExports,
   wrapWithCJSExports,
@@ -575,6 +622,7 @@ module.exports = {
   generateCJSImport,
   computeOutputPath,
   ensureOutputDir,
+  ensureOutputPackageJson,
   acquireLock,
   releaseLock,
   extractExportsFromCode,

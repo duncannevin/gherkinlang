@@ -9,10 +9,10 @@
  * @module compiler/cache
  */
 
-const path = require('path');
-const { CacheError } = require('./errors');
-const { sha256Concat } = require('./utils/hash');
-const { readFile, writeFile, exists, mkdir, rm, stat } = require('./utils/fs');
+import path from 'path';
+import { CacheError } from './errors.js';
+import { sha256Concat } from './utils/hash.js';
+import { readFile, writeFile, exists, mkdir, rm, stat } from './utils/fs.js';
 
 /**
  * @typedef {import('./types').CacheManagerOptions} CacheManagerOptions
@@ -508,4 +508,4 @@ class CacheManager {
     }
 }
 
-module.exports = { CacheManager };
+export { CacheManager };

@@ -8,10 +8,10 @@
  * @module validation/validator
  */
 
-const { validateSyntax } = require('./syntax');
-const { validatePurity } = require('./purity');
-const { validateLint } = require('./eslint-config');
-const { createValidationError, createEmptyValidationResult } = require('./types');
+import { validateSyntax } from './syntax.js';
+import { validatePurity } from './purity.js';
+import { validateLint } from './eslint-config.js';
+import { createValidationError, createEmptyValidationResult } from './types.js';
 
 /**
  * @typedef {import('./types').ValidationResult} ValidationResult
@@ -320,7 +320,7 @@ const isValid = async (code, options = {}) => {
   return result.valid;
 };
 
-module.exports = {
+export {
   validate,
   validateBatch,
   validateSyntaxOnly,

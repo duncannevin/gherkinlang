@@ -7,7 +7,7 @@
  * @module compiler/utils/hash
  */
 
-const crypto = require('crypto');
+import crypto from 'crypto';
 
 /**
  * Compute SHA256 hash of a string.
@@ -50,7 +50,7 @@ function sha256Concat(...inputs) {
   return sha256(concatenated);
 }
 
-module.exports = {
+export {
   sha256,
   sha256Buffer,
   sha256Concat,

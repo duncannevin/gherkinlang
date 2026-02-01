@@ -8,7 +8,7 @@
  * @module ai/response-parser
  */
 
-const { InvalidCodeError } = require('./errors');
+import { InvalidCodeError } from './errors.js';
 
 /**
  * @typedef {import('./types').AIAPIResponse} AIAPIResponse
@@ -192,4 +192,4 @@ class ResponseParser {
   }
 }
 
-module.exports = { ResponseParser };
+export { ResponseParser };

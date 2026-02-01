@@ -7,8 +7,8 @@
  * @module compiler/utils/fs
  */
 
-const fs = require('fs').promises;
-const path = require('path');
+import fs from 'fs/promises';
+import path from 'path';
 
 /**
  * Read a file as UTF-8 string.
@@ -177,7 +177,7 @@ async function findFiles(dirPath) {
   return files;
 }
 
-module.exports = {
+export {
   readFile,
   writeFile,
   exists,

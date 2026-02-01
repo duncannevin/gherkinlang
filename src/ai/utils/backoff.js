@@ -68,7 +68,7 @@ function shouldRetry(attempt, maxRetries = 3) {
   return attempt < maxRetries;
 }
 
-module.exports = {
+export {
   calculateDelay,
   delay,
   shouldRetry,

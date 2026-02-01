@@ -2,7 +2,7 @@
  * Jest configuration for GherkinLang compiler tests.
  */
 
-module.exports = {
+export default {
   testEnvironment: 'node',
   testMatch: [
     '**/test/**/*.test.js',
@@ -17,4 +17,7 @@ module.exports = {
   coverageReporters: ['text', 'lcov', 'html'],
   verbose: true,
   testTimeout: 10000,
+  // ESM support
+  transform: {},
+  moduleFileExtensions: ['js', 'mjs', 'cjs', 'json'],
 };

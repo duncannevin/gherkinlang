@@ -9,9 +9,9 @@
  * @module validation/eslint-config
  */
 
-const { ESLint } = require('eslint');
-const { DEFAULT_ESLINT_RULES } = require('./constants');
-const { getCodeSnippet } = require('./types');
+import { ESLint } from 'eslint';
+import { DEFAULT_ESLINT_RULES } from './constants.js';
+import { getCodeSnippet } from './types.js';
 
 /**
  * @typedef {import('./types').LintCheckResult} LintCheckResult
@@ -384,7 +384,7 @@ const listEnabledRules = () => {
   });
 };
 
-module.exports = {
+export {
   validateLint,
   getDefaultRules,
   createCustomRules,

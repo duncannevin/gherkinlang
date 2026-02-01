@@ -230,7 +230,7 @@ const createModuleExport = ({
   return moduleExport;
 };
 
-module.exports = {
+export {
   TEST_CATEGORIES,
   EXPORT_TYPES,
   MODULE_TYPES,

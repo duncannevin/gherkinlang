@@ -293,7 +293,7 @@ const DEFAULT_ESLINT_RULES = Object.freeze({
   'no-param-reassign': 'error',
 });
 
-module.exports = {
+export {
   MAX_SYNTAX_ERRORS,
   FORBIDDEN_IDENTIFIERS,
   FORBIDDEN_MEMBER_EXPRESSIONS,

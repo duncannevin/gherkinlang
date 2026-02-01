@@ -115,7 +115,7 @@ class ToolTimeoutError extends TransformationError {
   }
 }
 
-module.exports = {
+export {
   TransformationError,
   APIError,
   RateLimitError,

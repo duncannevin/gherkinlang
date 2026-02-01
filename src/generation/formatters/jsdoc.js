@@ -660,7 +660,7 @@ const generateModuleJSDocComplete = (moduleName, moduleDescription, exports, con
   return parts.join('\n');
 };
 
-module.exports = {
+export {
   generateModuleJSDoc,
   generateFunctionJSDoc,
   generateModuleJSDocComplete,

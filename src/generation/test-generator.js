@@ -9,10 +9,10 @@
  * @module generation/test-generator
  */
 
-const path = require('path');
-const fs = require('fs').promises;
-const { createEmptyTestSuite, createTestCase } = require('./types');
-const { inferTypeFromName, inferReturnTypeFromName } = require('./formatters/jsdoc');
+import path from 'path';
+import fs from 'fs/promises';
+import { createEmptyTestSuite, createTestCase } from './types.js';
+import { inferTypeFromName, inferReturnTypeFromName } from './formatters/jsdoc.js';
 
 /**
  * @typedef {import('./types').GeneratedModule} GeneratedModule
@@ -632,13 +632,17 @@ const generateImportStatement = (modulePath, exportNames, moduleFormat = 'common
 /**
  * Computes the test file path from a module path.
  *
- * @param {string} modulePath - Path to module (.js file)
+ * @param {string} modulePath - Path to module (.js or .cjs file)
  * @param {string} [testDir] - Test directory (defaults to same directory)
+ * @param {'commonjs' | 'esm'} [moduleFormat='commonjs'] - Module format
  * @returns {string} Test file path
  */
-const computeTestPath = (modulePath, testDir) => {
+const computeTestPath = (modulePath, testDir, moduleFormat = 'commonjs') => {
   const dir = testDir || path.dirname(modulePath);
-  const basename = path.basename(modulePath, '.js');
+  // Remove .js or .cjs extension
+  let basename = path.basename(modulePath);
+  basename = basename.replace(/\.(c?js)$/, '');
+  // Always use .test.js extension
   return path.join(dir, `${basename}.test.js`);
 };
 
@@ -654,7 +658,7 @@ const computeTestPath = (modulePath, testDir) => {
  * @returns {string} Complete test file content
  */
 const createTestFile = (moduleName, modulePath, exportNames, testCases, options = {}) => {
-  const { moduleFormat = 'commonjs' } = options;
+  const { moduleFormat = 'commonjs', testFilePath } = options;
 
   const lines = [];
 
@@ -666,10 +670,22 @@ const createTestFile = (moduleName, modulePath, exportNames, testCases, options 
   lines.push(' */');
   lines.push('');
 
-  // Import statement
-  const relativePath = modulePath.startsWith('.')
-    ? modulePath
-    : `./${path.basename(modulePath)}`;
+  // Compute relative import path from test file to module (without extension)
+  let relativePath;
+  if (testFilePath) {
+    const testDir = path.dirname(testFilePath);
+    relativePath = path.relative(testDir, modulePath);
+    // Ensure it starts with ./ or ../
+    if (!relativePath.startsWith('.')) {
+      relativePath = './' + relativePath;
+    }
+  } else {
+    relativePath = modulePath.startsWith('.')
+      ? modulePath
+      : `./${path.basename(modulePath)}`;
+  }
+  // Remove .js or .cjs extension from import path
+  relativePath = relativePath.replace(/\.(c?js)$/, '');
   lines.push(generateImportStatement(relativePath, exportNames, moduleFormat));
   lines.push('');
 
@@ -716,8 +732,8 @@ const generateTests = async (module, context, options = {}) => {
 
   const { examples = [], paramTypes = {}, scenarios = [] } = context;
 
-  // Compute test path
-  const testPath = computeTestPath(module.outputPath, testDir);
+  // Compute test path (uses .cjs for CommonJS, .js for ESM)
+  const testPath = computeTestPath(module.outputPath, testDir, moduleFormat);
 
   // Create result structure
   const result = createEmptyTestSuite(module.outputPath, testPath);
@@ -790,7 +806,7 @@ const generateTests = async (module, context, options = {}) => {
     module.outputPath,
     exportNames,
     allTestCases,
-    { moduleFormat }
+    { moduleFormat, testFilePath: testPath }
   );
 
   // Estimate coverage
@@ -853,7 +869,7 @@ const estimateCoverage = (testCases, exports) => {
   return Math.min(100, Math.round(totalCoverage));
 };
 
-module.exports = {
+export {
   generateTests,
   generateExampleTests,
   generateTypeTests,

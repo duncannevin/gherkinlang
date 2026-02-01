@@ -9,16 +9,19 @@
  * @module validation/purity
  */
 
-const traverse = require('@babel/traverse').default;
-const {
+import traverse from '@babel/traverse';
+import {
   FORBIDDEN_IDENTIFIERS,
   FORBIDDEN_MEMBER_EXPRESSIONS,
   MUTATING_ARRAY_METHODS,
   MUTATING_OBJECT_METHODS,
   FORBIDDEN_NODE_TYPES,
   ALLOWED_PURE_PATTERNS,
-} = require('./constants');
-const { getCodeSnippet, VIOLATION_TYPES } = require('./types');
+} from './constants.js';
+import { getCodeSnippet, VIOLATION_TYPES } from './types.js';
+
+// Handle different module export styles for @babel/traverse
+const traverseFn = typeof traverse === 'function' ? traverse : traverse.default;
 
 /**
  * @typedef {import('./types').PurityCheckResult} PurityCheckResult
@@ -391,7 +394,7 @@ const validatePurity = (ast, code, options = {}) => {
   };
 
   try {
-    traverse(ast, {
+    traverseFn(ast, {
       // T016: Detect forbidden constructs
       'ForStatement|ForInStatement|ForOfStatement|WhileStatement|DoWhileStatement'(path) {
         const nodeType = path.node.type;
@@ -695,7 +698,7 @@ const validatePurity = (ast, code, options = {}) => {
   };
 };
 
-module.exports = {
+export {
   validatePurity,
   // Export for testing
   createPurityViolation,

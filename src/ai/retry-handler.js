@@ -8,8 +8,8 @@
  * @module ai/retry-handler
  */
 
-const { calculateDelay, delay, shouldRetry } = require('./utils/backoff');
-const { APIError, RateLimitError, TransformationError } = require('./errors');
+import { calculateDelay, delay, shouldRetry } from './utils/backoff.js';
+import { APIError, RateLimitError, TransformationError } from './errors.js';
 
 /**
  * @typedef {Function} APICallFunction
@@ -158,4 +158,4 @@ class RetryHandler {
   }
 }
 
-module.exports = { RetryHandler };
+export { RetryHandler };

@@ -8,8 +8,8 @@
  * @module generation/formatters/javascript
  */
 
-const path = require('path');
-const fs = require('fs').promises;
+import path from 'path';
+import fs from 'fs/promises';
 
 /**
  * @typedef {Object} FormatResult
@@ -345,7 +345,7 @@ const getDefaultConfig = () => {
   return { ...DEFAULT_PRETTIER_CONFIG };
 };
 
-module.exports = {
+export {
   formatCode,
   formatCodeSync,
   isFormatted,

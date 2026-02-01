@@ -8,8 +8,12 @@
  * @module ai/prompt-builder
  */
 
-const { readFile } = require('../compiler/utils/fs');
-const path = require('path');
+import { readFile } from '../compiler/utils/fs.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /**
  * @typedef {import('./types').CompilationPrompt} CompilationPrompt
@@ -178,4 +182,4 @@ class PromptBuilder {
   }
 }
 
-module.exports = { PromptBuilder };
+export { PromptBuilder };

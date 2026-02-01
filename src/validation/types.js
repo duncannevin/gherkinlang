@@ -237,7 +237,7 @@ const createEmptyValidationResult = () => ({
   duration: 0,
 });
 
-module.exports = {
+export {
   ERROR_TYPES,
   SEVERITY_LEVELS,
   VIOLATION_TYPES,

@@ -8,16 +8,16 @@
  * @module ai/transformer
  */
 
-const Anthropic = require('@anthropic-ai/sdk');
-const { PromptBuilder } = require('./prompt-builder');
-const { ResponseParser } = require('./response-parser');
-const { RetryHandler } = require('./retry-handler');
-const {
+import Anthropic from '@anthropic-ai/sdk';
+import { PromptBuilder } from './prompt-builder.js';
+import { ResponseParser } from './response-parser.js';
+import { RetryHandler } from './retry-handler.js';
+import {
 	TransformationError,
 	APIError,
 	RateLimitError,
 	InvalidCodeError,
-} = require('./errors');
+} from './errors.js';
 
 /**
  * @typedef {import('./types').TransformResult} TransformResult
@@ -67,9 +67,12 @@ class AITransformer {
 		/** @type {ToolInvoker|null} */
 		this._toolInvoker = null;
 
+		// MCP Tool invoker will be lazily imported when needed
+		this._toolInvokerPromise = null;
 		if (this._mcpClient) {
-			const { ToolInvoker } = require('../mcp/tool-invoker');
-			this._toolInvoker = new ToolInvoker(this._mcpClient);
+			this._toolInvokerPromise = import('../mcp/tool-invoker.js').then(({ ToolInvoker }) => {
+				this._toolInvoker = new ToolInvoker(this._mcpClient);
+			});
 		}
 	}
 
@@ -92,11 +95,16 @@ class AITransformer {
 		let turnCount = 0;
 
 		try {
+			// Wait for tool invoker to be ready if MCP client is provided
+			if (this._toolInvokerPromise) {
+				await this._toolInvokerPromise;
+			}
+
 			// Get tools from MCP client if available
 			let tools = options.tools || [];
 			if (this._mcpClient && this._mcpClient.isConnected()) {
 				const mcpTools = this._mcpClient.getTools();
-				const { ToolRegistry } = require('../mcp/tool-registry');
+				const { ToolRegistry } = await import('../mcp/tool-registry.js');
 				const registry = new ToolRegistry();
 				mcpTools.forEach(tool => registry.register(tool));
 				tools = registry.toClaudeTools();
@@ -417,4 +425,4 @@ class AITransformer {
 	}
 }
 
-module.exports = { AITransformer };
+export { AITransformer };

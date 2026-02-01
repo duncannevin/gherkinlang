@@ -8,9 +8,9 @@
  * @module validation/syntax
  */
 
-const { parse } = require('@babel/parser');
-const { MAX_SYNTAX_ERRORS } = require('./constants');
-const { createValidationError, getCodeSnippet } = require('./types');
+import { parse } from '@babel/parser';
+import { MAX_SYNTAX_ERRORS } from './constants.js';
+import { createValidationError, getCodeSnippet } from './types.js';
 
 /**
  * @typedef {import('./types').SyntaxCheckResult} SyntaxCheckResult
@@ -278,7 +278,7 @@ const detectModuleFormat = (code) => {
   return 'unambiguous';
 };
 
-module.exports = {
+export {
   validateSyntax,
   isESModuleSyntax,
   isCommonJSSyntax,

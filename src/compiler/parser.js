@@ -13,9 +13,9 @@
  * @typedef {import('./types').ScenarioInfo} ScenarioInfo
  */
 
-const { readFile, findFiles } = require('./utils/fs');
-const path = require('path');
-const { ParseError } = require('./errors');
+import { readFile, findFiles } from './utils/fs.js';
+import path from 'path';
+import { ParseError } from './errors.js';
 
 /**
  * Parser for GherkinLang source files.
@@ -191,4 +191,4 @@ class GherkinParser {
     }
 }
 
-module.exports = { GherkinParser };
+export { GherkinParser };

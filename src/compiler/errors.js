@@ -94,7 +94,7 @@ class CacheError extends Error {
   }
 }
 
-module.exports = {
+export {
   RulesLoadError,
   ParseError,
   ContextBuildError,

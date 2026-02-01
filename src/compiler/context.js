@@ -8,10 +8,10 @@
  * @module compiler/context
  */
 
-const { GherkinParser } = require('./parser');
-const { ContextBuildError } = require('./errors');
-const { findFiles, readFile, exists } = require('./utils/fs');
-const path = require('path');
+import { GherkinParser } from './parser.js';
+import { ContextBuildError } from './errors.js';
+import { findFiles, readFile, exists } from './utils/fs.js';
+import path from 'path';
 
 /**
  * @typedef {import('./types').ModuleInfo} ModuleInfo
@@ -330,4 +330,4 @@ class ProjectContext {
     }
 }
 
-module.exports = { ProjectContext };
+export { ProjectContext };

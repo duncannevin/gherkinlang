@@ -47,6 +47,34 @@ this           // No this binding
 new (mostly)   // Avoid new except for Error
 ```
 
+### Variable Naming
+
+Use **descriptive variable names** that reflect the data's meaning:
+
+```javascript
+// ✅ GOOD - descriptive names
+const adults = users.filter(u => u.age >= 18);
+const total = prices.reduce((a, b) => a + b, 0);
+const sortedProducts = products.toSorted((a, b) => a.price - b.price);
+
+// ❌ AVOID - generic 'result' everywhere
+const result = users.filter(u => u.age >= 18);  // What kind of result?
+const result = prices.reduce((a, b) => a + b, 0);  // Unclear
+```
+
+**Do NOT** create intermediate `result` variables. Instead, return expressions directly when possible:
+
+```javascript
+// ✅ PREFERRED - direct return
+const add = (a, b) => a + b;
+
+// ❌ AVOID - unnecessary intermediate variable
+const add = (a, b) => {
+  const result = a + b;
+  return result;
+};
+```
+
 ---
 
 ## Compilation Mappings
@@ -136,7 +164,7 @@ const process_items = (items, threshold) => {
 When apply validate to user
 ```
 ```javascript
-const result = validate(user);
+const validatedUser = validate(user);
 ```
 
 **Named Application**
@@ -156,11 +184,11 @@ When pipe users through
 ```
 ```javascript
 // Option 1: Nested calls
-const result = take_first_ten(sort_by_name(filter_active(users)));
+const topActiveUsers = take_first_ten(sort_by_name(filter_active(users)));
 
 // Option 2: With pipe helper (preferred for readability)
 const pipe = (...fns) => (x) => fns.reduce((v, f) => f(v), x);
-const result = pipe(filter_active, sort_by_name, take_first_ten)(users);
+const topActiveUsers = pipe(filter_active, sort_by_name, take_first_ten)(users);
 ```
 
 **Let Binding**
@@ -183,8 +211,8 @@ When filter users where age >= 18
 When filter products where price < budget and in_stock
 ```
 ```javascript
-const result = users.filter(user => user.age >= 18);
-const result = products.filter(product => product.price < budget && product.in_stock);
+const adults = users.filter(user => user.age >= 18);
+const affordableInStock = products.filter(product => product.price < budget && product.in_stock);
 ```
 
 **Map (Property Access)**
@@ -192,7 +220,7 @@ const result = products.filter(product => product.price < budget && product.in_s
 When map users to get email
 ```
 ```javascript
-const result = users.map(user => user.email);
+const emails = users.map(user => user.email);
 ```
 
 **Map (Transformation)**
@@ -200,9 +228,9 @@ const result = users.map(user => user.email);
 When map numbers to double
 ```
 ```javascript
-const result = numbers.map(n => n * 2);
+const doubled = numbers.map(n => n * 2);
 // Or if double is a function:
-const result = numbers.map(double);
+const doubled = numbers.map(double);
 ```
 
 **Map with Function Call**
@@ -210,7 +238,7 @@ const result = numbers.map(double);
 When map emails with send_notification(email, message)
 ```
 ```javascript
-const result = emails.map(email => send_notification(email, message));
+const notifications = emails.map(email => send_notification(email, message));
 ```
 
 **Sort**
@@ -219,21 +247,21 @@ When sort users by last_name
 When sort products by price descending
 ```
 ```javascript
-// Ascending (default) - strings
-const result = [...users].sort((a, b) => a.last_name.localeCompare(b.last_name));
+// Ascending (default) - strings - use toSorted() for immutability
+const sortedByName = users.toSorted((a, b) => a.last_name.localeCompare(b.last_name));
 
 // Descending - numbers
-const result = [...products].sort((a, b) => b.price - a.price);
+const sortedByPriceDesc = products.toSorted((a, b) => b.price - a.price);
 ```
 
-> **Note:** Always spread to new array `[...collection]` before sorting to preserve immutability.
+> **IMPORTANT:** Always use `toSorted()` instead of `sort()`. The `sort()` method mutates the array which violates purity. Use `toSorted()` (ES2023) which returns a new sorted array.
 
 **Reduce**
 ```gherkin
 When reduce numbers with 0 and add
 ```
 ```javascript
-const result = numbers.reduce((acc, n) => acc + n, 0);
+const sum = numbers.reduce((acc, n) => acc + n, 0);
 ```
 
 **Group**
@@ -242,10 +270,10 @@ When group users by department
 ```
 ```javascript
 // ES2024+ (preferred if available)
-const result = Object.groupBy(users, user => user.department);
+const byDepartment = Object.groupBy(users, user => user.department);
 
 // Fallback for older environments
-const result = users.reduce((groups, user) => ({
+const byDepartment = users.reduce((groups, user) => ({
   ...groups,
   [user.department]: [...(groups[user.department] || []), user]
 }), {});
@@ -256,7 +284,7 @@ const result = users.reduce((groups, user) => ({
 When zip names with scores
 ```
 ```javascript
-const result = names.map((name, i) => [name, scores[i]]);
+const pairs = names.map((name, i) => [name, scores[i]]);
 ```
 
 **Flatten**
@@ -264,9 +292,9 @@ const result = names.map((name, i) => [name, scores[i]]);
 When flatten nested_items
 ```
 ```javascript
-const result = nested_items.flat();
+const flattened = nested_items.flat();
 // For deep flatten:
-const result = nested_items.flat(Infinity);
+const deepFlattened = nested_items.flat(Infinity);
 ```
 
 ---
@@ -377,7 +405,7 @@ Otherwise
   Then return "minor"
 ```
 ```javascript
-const result = age >= 18 ? "adult" : "minor";
+const category = age >= 18 ? "adult" : "minor";
 ```
 
 ---
@@ -468,6 +496,8 @@ new Date()
 array.push()
 array.pop()
 array.splice()
+array.sort()      // Use toSorted() instead
+array.reverse()   // Use toReversed() instead
 object.property = value
 delete object.property
 
@@ -642,7 +672,7 @@ export const calculate_order_total = (items) => {
  */
 export const get_discounted_items = (items) => {
   const discounted = items.filter(item => item.discount > 0);
-  return [...discounted].sort((a, b) => b.discount - a.discount);
+  return discounted.toSorted((a, b) => b.discount - a.discount);
 };
 
 export default {
