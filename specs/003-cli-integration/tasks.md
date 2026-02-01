@@ -124,13 +124,13 @@
 
 **Purpose**: Edge cases, error handling, and refinements
 
-- [ ] T046 [P] Add edge case handling for missing file arguments in compile command
-- [ ] T047 [P] Add edge case handling for non-existent directories in watch command
-- [ ] T048 [P] Add edge case handling for invalid JSON in config files
-- [ ] T049 [P] Add CI environment detection (disable colors/spinners when CI=true)
-- [ ] T050 Implement --quiet and --verbose flags across all commands
-- [ ] T051 [P] Add helpful error messages with suggestions and docs links
-- [ ] T052 Run quickstart.md validation (manual test of all documented commands)
+- [x] T046 [P] Add edge case handling for missing file arguments in compile command
+- [x] T047 [P] Add edge case handling for non-existent directories in watch command
+- [x] T048 [P] Add edge case handling for invalid JSON in config files
+- [x] T049 [P] Add CI environment detection (disable colors/spinners when CI=true)
+- [x] T050 Implement --quiet and --verbose flags across all commands
+- [x] T051 [P] Add helpful error messages with suggestions and docs links
+- [x] T052 Run quickstart.md validation (manual test of all documented commands)
 
 ---
 

@@ -103,9 +103,9 @@ class GherkinParser {
 
         for (const l of lines) {
             const line = l.trim();
-            
+
             // Match: Given import lodash as _
-            const aliasMatch = line.match(/^Given\s+import\s+(\S+)\s+as\s+(\w+)$/i);
+            const aliasMatch = line.match(/^(?:Given|And)\s+import\s+(\S+)\s+as\s+(\w+)$/i);
             if (aliasMatch) {
                 imports.push({
                     name: aliasMatch[1],
@@ -114,7 +114,7 @@ class GherkinParser {
                 });
                 continue;
             }
-            
+
             // Match: Given import ModuleName
             const importMatch = line.match(/^Given\s+import\s+(\w+)$/i);
             if (importMatch) {

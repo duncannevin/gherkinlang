@@ -302,16 +302,43 @@ export const shutdown = async (watcher, state, context) => {
 export const execute = async (dir, options, context) => {
   const { logger } = context;
 
+  // Validate directory argument
+  if (!dir || dir.trim() === '') {
+    logger.error('No directory specified');
+    logger.blank('');
+    logger.info('Usage: gherkin watch <directory>');
+    logger.info('');
+    logger.info('Examples:');
+    logger.info('  gherkin watch features/');
+    logger.info('  gherkin watch src/features --initial');
+    logger.info('');
+    logger.info('See: https://gherkinlang.dev/cli#watch');
+    return;
+  }
+
   // Validate directory exists
   const absoluteDir = resolve(context.cwd, dir);
   if (!existsSync(absoluteDir)) {
     logger.error(`Directory not found: ${dir}`);
+    logger.blank('');
+    logger.info('Suggestion: Check that the directory exists and is spelled correctly');
+    logger.info('');
+    logger.info('To create a new project with a features directory, run:');
+    logger.info('  gherkin init --template basic');
+    logger.info('');
+    logger.info('Or create the directory manually:');
+    logger.info(`  mkdir -p ${dir}`);
     return;
   }
 
   const stat = statSync(absoluteDir);
   if (!stat.isDirectory()) {
     logger.error(`Not a directory: ${dir}`);
+    logger.blank('');
+    logger.info('Suggestion: The watch command requires a directory path');
+    logger.info('');
+    logger.info('To compile a single file, use the compile command:');
+    logger.info(`  gherkin compile ${dir}`);
     return;
   }
 

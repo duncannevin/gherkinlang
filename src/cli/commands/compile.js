@@ -400,12 +400,55 @@ export const execute = async (files, options, context) => {
   const { logger } = context;
   const startTime = Date.now();
 
+  // Validate files argument
+  if (!files || files.length === 0) {
+    logger.error('No files or directories specified');
+    logger.blank('');
+    logger.info('Usage: gherkin compile <files...>');
+    logger.info('');
+    logger.info('Examples:');
+    logger.info('  gherkin compile features/');
+    logger.info('  gherkin compile features/math.feature');
+    logger.info('');
+    logger.info('See: https://gherkinlang.dev/cli#compile');
+    return {
+      success: false,
+      files: [],
+      summary: {
+        total: 0,
+        succeeded: 0,
+        failed: 0,
+        cached: 0,
+        totalDuration: Date.now() - startTime,
+        errorCount: 1,
+        warningCount: 0,
+      },
+    };
+  }
+
   // Discover all files to compile
   let filesToCompile;
   try {
     filesToCompile = await discoverFiles(files, context.cwd);
   } catch (error) {
     logger.error(error.message);
+    
+    // Add helpful suggestions based on error type
+    if (error.message.includes('Path not found')) {
+      logger.blank('');
+      logger.info('Suggestion: Check that the path exists and is spelled correctly');
+      logger.info('');
+      logger.info('To create a new project with example features, run:');
+      logger.info('  gherkin init --template basic');
+    } else if (error.message.includes('Not a .feature file')) {
+      logger.blank('');
+      logger.info('Suggestion: Only .feature files can be compiled');
+      logger.info('');
+      logger.info('Examples:');
+      logger.info('  gherkin compile features/math.feature');
+      logger.info('  gherkin compile features/  # compiles all .feature files');
+    }
+    
     return {
       success: false,
       files: [],
@@ -423,6 +466,11 @@ export const execute = async (files, options, context) => {
 
   if (filesToCompile.length === 0) {
     logger.warn('No .feature files found to compile');
+    logger.blank('');
+    logger.info('Suggestion: Create a .feature file or check your path');
+    logger.info('');
+    logger.info('To create a new project with example features, run:');
+    logger.info('  gherkin init --template basic');
     return {
       success: true,
       files: [],

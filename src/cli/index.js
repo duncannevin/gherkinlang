@@ -86,7 +86,11 @@ export const loadConfig = async (startDir) => {
     return { config, path: configPath };
   } catch (error) {
     if (error instanceof SyntaxError) {
-      throw new Error(`Invalid JSON in ${configPath}: ${error.message}`);
+      throw new Error(
+        `Invalid JSON in ${configPath}: ${error.message}\n\n` +
+        `  Suggestion: Check for syntax errors like missing commas or quotes\n` +
+        `  Documentation: https://gherkinlang.dev/configuration`
+      );
     }
     throw error;
   }

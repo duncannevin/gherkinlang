@@ -782,9 +782,16 @@ export const execute = async (name, options, context) => {
 
   // Validate template name
   if (!VALID_TEMPLATES.includes(templateName)) {
-    logger.error(
-      `Invalid template: ${templateName}. Valid options: ${VALID_TEMPLATES.join(', ')}`
-    );
+    logger.error(`Invalid template: ${templateName}`);
+    logger.blank('');
+    logger.info(`Available templates: ${VALID_TEMPLATES.join(', ')}`);
+    logger.blank('');
+    logger.info('Template descriptions:');
+    logger.info('  basic   - Minimal setup with one example');
+    logger.info('  library - Utility functions for math and strings');
+    logger.info('  api     - Full Express.js CRUD API with auth');
+    logger.blank('');
+    logger.info('See: https://gherkinlang.dev/templates');
     return;
   }
 
