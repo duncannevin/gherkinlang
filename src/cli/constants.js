@@ -45,7 +45,7 @@ export const DEFAULT_VALIDATION_CONFIG = {
  * @type {import('./types.js').AIConfig}
  */
 export const DEFAULT_AI_CONFIG = {
-  model: 'claude-3-opus-20240229',
+  model: 'claude-sonnet-4-20250514',
   maxRetries: 3,
   timeout: 60000,
 };

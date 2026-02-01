@@ -82,7 +82,7 @@ const { ParseError } = require('./errors');
 
 /**
  * @typedef {Object} AIConfig
- * @property {string} model - AI model identifier (e.g., 'claude-3-opus-20240229')
+ * @property {string} model - AI model identifier (e.g., 'claude-sonnet-4-20250514')
  * @property {number} maxRetries - Maximum retry attempts for AI calls
  * @property {number} timeout - Timeout in milliseconds for AI calls
  */
@@ -117,7 +117,7 @@ const { ParseError } = require('./errors');
  * @typedef {Object} CacheMetadata
  * @property {string} timestamp - ISO 8601 timestamp
  * @property {number} duration - Compilation duration in milliseconds
- * @property {string} model - AI model used (e.g., 'claude-3-opus-20240229')
+ * @property {string} model - AI model used (e.g., 'claude-sonnet-4-20250514')
  * @property {string} compilerVersion - Compiler version string
  * @property {string} target - Target language
  */

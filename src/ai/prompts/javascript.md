@@ -516,6 +516,127 @@ new MyClass()
 
 ---
 
+## Date/Time Operations with date-fns
+
+**IMPORTANT:** Never use the native `Date` object directly. Always use the `date-fns` library for all date/time operations to maintain purity.
+
+### Why date-fns?
+
+The native `Date` object is impure:
+- `new Date()` depends on the current system time (non-deterministic)
+- `Date.now()` is non-deterministic
+- Date objects are mutable
+
+The `date-fns` library provides pure, immutable date operations that take dates as parameters.
+
+### Required Pattern
+
+Always pass timestamps/dates as function parameters instead of creating them inside functions:
+
+```javascript
+// ❌ FORBIDDEN - impure, non-deterministic
+const getTimestamp = () => new Date();
+const isExpired = (token) => new Date() > token.expiresAt;
+
+// ✅ CORRECT - pure, receives current time as parameter
+import { isAfter, formatISO, addHours, differenceInSeconds } from 'date-fns';
+
+const isExpired = (token, currentTime) => isAfter(currentTime, token.expiresAt);
+const createToken = (userId, currentTime, expirationHours = 24) => ({
+  userId,
+  createdAt: formatISO(currentTime),
+  expiresAt: formatISO(addHours(currentTime, expirationHours))
+});
+```
+
+### Common date-fns Functions
+
+```javascript
+import {
+  // Formatting
+  formatISO,           // Format as ISO string
+  format,              // Custom format
+  
+  // Comparison
+  isAfter,             // Check if date is after another
+  isBefore,            // Check if date is before another
+  isEqual,             // Check if dates are equal
+  
+  // Arithmetic
+  addHours,            // Add hours to date
+  addMinutes,          // Add minutes to date
+  addDays,             // Add days to date
+  subHours,            // Subtract hours
+  
+  // Difference
+  differenceInSeconds, // Get difference in seconds
+  differenceInMinutes, // Get difference in minutes
+  differenceInHours,   // Get difference in hours
+  differenceInDays,    // Get difference in days
+  
+  // Parsing
+  parseISO,            // Parse ISO string to Date
+} from 'date-fns';
+```
+
+### Example: Timestamps in Records
+
+```gherkin
+Scenario: Create a record with timestamp
+  Given record data and current timestamp
+  When I create the record
+  Then the record includes createdAt formatted timestamp
+```
+
+```javascript
+import { formatISO } from 'date-fns';
+
+const createRecord = (data, currentTime) => ({
+  ...data,
+  id: generateId(),
+  createdAt: formatISO(currentTime)
+});
+```
+
+### Example: Token Expiration
+
+```gherkin
+Scenario: Generate auth token
+  Given user id, current timestamp, and expiration hours
+  When I generate the token
+  Then the token includes expiration timestamp
+```
+
+```javascript
+import { addHours, formatISO, isAfter } from 'date-fns';
+
+const generateToken = (userId, currentTime, expirationHours = 24) => ({
+  userId,
+  expiresAt: formatISO(addHours(currentTime, expirationHours))
+});
+
+const isTokenValid = (token, currentTime) => 
+  !isAfter(currentTime, new Date(token.expiresAt));
+```
+
+### Example: Uptime Calculation
+
+```gherkin
+Scenario: Calculate uptime
+  Given start timestamp and current timestamp
+  When I calculate uptime
+  Then uptime in seconds is returned
+```
+
+```javascript
+import { differenceInSeconds } from 'date-fns';
+
+const calculateUptime = (startTime, currentTime) => 
+  differenceInSeconds(currentTime, startTime);
+```
+
+---
+
 ## JSDoc Type Annotations
 
 Always generate JSDoc comments for public functions:

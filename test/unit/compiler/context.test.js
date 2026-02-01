@@ -851,7 +851,7 @@ describe('ProjectContext', () => {
       expect(config.validation.purity).toBe(true);
       expect(config.validation.lint).toBe(false);
       expect(config.validation.lintConfig).toBe('.eslintrc.json');
-      expect(config.ai.model).toBe('claude-3-opus-20240229');
+      expect(config.ai.model).toBe('claude-sonnet-4-20250514');
       expect(config.ai.maxRetries).toBe(3);
       expect(config.ai.timeout).toBe(60000);
       expect(config.generation.jsdoc).toBe(true);

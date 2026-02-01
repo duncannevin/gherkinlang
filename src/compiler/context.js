@@ -310,7 +310,7 @@ class ProjectContext {
                 lintConfig: configData.validation?.lintConfig || '.eslintrc.json',
             },
             ai: {
-                model: configData.ai?.model || 'claude-3-opus-20240229',
+                model: configData.ai?.model || 'claude-sonnet-4-20250514',
                 maxRetries: configData.ai?.maxRetries || 3,
                 timeout: configData.ai?.timeout || 60000,
             },

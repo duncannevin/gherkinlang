@@ -104,17 +104,17 @@
 
 ### Implementation for User Story 3
 
-- [ ] T035 [US3] Define project templates (basic, library, api) with config and example files in src/cli/commands/init.js
-- [ ] T036 [US3] Implement register() function with command signature in src/cli/commands/init.js
-- [ ] T037 [US3] Implement getTemplate() to retrieve template by name in src/cli/commands/init.js
-- [ ] T038 [US3] Implement promptTemplate() with @inquirer/prompts select in src/cli/commands/init.js
-- [ ] T039 [US3] Implement directory creation and validation in src/cli/commands/init.js
-- [ ] T040 [US3] Implement overwrite warning and confirmation prompt in src/cli/commands/init.js
-- [ ] T041 [US3] Implement createProject() to write config and example files in src/cli/commands/init.js
-- [ ] T042 [US3] Implement displayNextSteps() with post-init instructions in src/cli/commands/init.js
-- [ ] T043 [US3] Implement execute() orchestrating init flow in src/cli/commands/init.js
-- [ ] T044 [US3] Add init command options (--template, --yes, --force) in src/cli/commands/init.js
-- [ ] T045 [US3] Wire init command registration in src/cli/index.js
+- [x] T035 [US3] Define project templates (basic, library, api) with config and example files in src/cli/commands/init.js
+- [x] T036 [US3] Implement register() function with command signature in src/cli/commands/init.js
+- [x] T037 [US3] Implement getTemplate() to retrieve template by name in src/cli/commands/init.js
+- [x] T038 [US3] Implement promptTemplate() with @inquirer/prompts select in src/cli/commands/init.js
+- [x] T039 [US3] Implement directory creation and validation in src/cli/commands/init.js
+- [x] T040 [US3] Implement overwrite warning and confirmation prompt in src/cli/commands/init.js
+- [x] T041 [US3] Implement createProject() to write config and example files in src/cli/commands/init.js
+- [x] T042 [US3] Implement displayNextSteps() with post-init instructions in src/cli/commands/init.js
+- [x] T043 [US3] Implement execute() orchestrating init flow in src/cli/commands/init.js
+- [x] T044 [US3] Add init command options (--template, --yes, --force) in src/cli/commands/init.js
+- [x] T045 [US3] Wire init command registration in src/cli/index.js
 
 **Checkpoint**: User Story 3 complete - `gherkin init` creates project with templates
 

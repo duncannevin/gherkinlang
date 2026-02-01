@@ -17,6 +17,7 @@ import { createLogger } from './utils/logger.js';
 import { CONFIG_FILE_NAME, DEFAULT_CONFIG, EXIT_CODES } from './constants.js';
 import { register as registerCompile } from './commands/compile.js';
 import { register as registerWatch } from './commands/watch.js';
+import { register as registerInit } from './commands/init.js';
 
 // Get package.json for version
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -218,18 +219,8 @@ export const createProgram = () => {
       }
     });
 
-  // Init command (stub - will be implemented in Phase 5)
-  program
-    .command('init [name]')
-    .description('Initialize a new GherkinLang project')
-    .option('-t, --template <type>', 'Template: basic, library, api')
-    .option('-y, --yes', 'Accept all defaults without prompts')
-    .option('--force', 'Overwrite existing files')
-    .action(async (name, options) => {
-      const logger = createLogger({ noColor: program.opts().noColor });
-      logger.error('Init command not yet implemented. See Phase 5.');
-      process.exit(EXIT_CODES.ERROR);
-    });
+  // Init command
+  registerInit(program);
 
   // Cache command (out of scope - stub only)
   program
