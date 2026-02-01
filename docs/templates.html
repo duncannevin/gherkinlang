@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Templates - GherkinLang</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">🥒</span>
+        GherkinLang
+      </a>
+      <nav>
+        <ul>
+          <li><a href="getting-started.html">Get Started</a></li>
+          <li><a href="language.html">Language</a></li>
+          <li><a href="cli.html">CLI</a></li>
+          <li><a href="configuration.html">Config</a></li>
+          <li><a href="https://github.com/duncannevin/gherkinlang-js" target="_blank">GitHub</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="content-wrapper">
+        <aside class="sidebar">
+          <h3>Templates</h3>
+          <ul>
+            <li><a href="#basic">Basic</a></li>
+            <li><a href="#library">Library</a></li>
+            <li><a href="#api">API</a></li>
+          </ul>
+        </aside>
+
+        <div class="content">
+          <h1>Project Templates</h1>
+          <p>GherkinLang provides templates to quickly bootstrap new projects.</p>
+
+          <pre><code>gherkin init my-project --template &lt;template-name&gt;</code></pre>
+
+          <h2 id="basic">Basic Template</h2>
+          <p>Minimal setup with one example feature file.</p>
+          <pre><code>gherkin init my-project --template basic</code></pre>
+
+          <h3>Files Created</h3>
+          <ul>
+            <li><code>.gherkinrc.json</code> - Configuration file</li>
+            <li><code>features/example.feature</code> - Simple example</li>
+          </ul>
+
+          <h3>Example Feature</h3>
+          <pre><code><span class="keyword">Feature:</span> Example
+  A simple example to get started with GherkinLang.
+
+<span class="keyword">Scenario:</span> Add two numbers
+  <span class="keyword">Given</span> the first number is 5
+  <span class="keyword">And</span> the second number is 3
+  <span class="keyword">When</span> I add them together
+  <span class="keyword">Then</span> the result should be 8</code></pre>
+
+          <p><strong>Best for:</strong> Learning GherkinLang, quick prototypes</p>
+
+          <h2 id="library">Library Template</h2>
+          <p>Utility functions for math and string operations.</p>
+          <pre><code>gherkin init my-lib --template library</code></pre>
+
+          <h3>Files Created</h3>
+          <ul>
+            <li><code>.gherkinrc.json</code> - Configuration file</li>
+            <li><code>features/math.feature</code> - Mathematical utilities</li>
+            <li><code>features/strings.feature</code> - String manipulation</li>
+          </ul>
+
+          <h3>Math Feature</h3>
+          <pre><code><span class="keyword">Feature:</span> Math
+  Mathematical utility functions.
+
+<span class="keyword">Scenario:</span> Calculate factorial
+  <span class="keyword">Given</span> a number n
+  <span class="keyword">When</span> I calculate factorial of n
+  <span class="keyword">Then</span> the result is n! (n factorial)
+
+<span class="keyword">Scenario:</span> Check if prime
+  <span class="keyword">Given</span> a number n
+  <span class="keyword">When</span> I check if n is prime
+  <span class="keyword">Then</span> the result is true if n has exactly 2 divisors</code></pre>
+
+          <h3>Strings Feature</h3>
+          <pre><code><span class="keyword">Feature:</span> Strings
+  String manipulation utilities.
+
+<span class="keyword">Scenario:</span> Capitalize a string
+  <span class="keyword">Given</span> a string text
+  <span class="keyword">When</span> I capitalize the string
+  <span class="keyword">Then</span> the first character is uppercase and the rest lowercase
+
+<span class="keyword">Scenario:</span> Reverse a string
+  <span class="keyword">Given</span> a string text
+  <span class="keyword">When</span> I reverse the string
+  <span class="keyword">Then</span> the characters are in opposite order</code></pre>
+
+          <p><strong>Best for:</strong> Utility libraries, npm packages</p>
+
+          <h2 id="api">API Template</h2>
+          <p>Full-featured Express.js CRUD API with authentication.</p>
+          <pre><code>gherkin init my-api --template api</code></pre>
+
+          <h3>Files Created</h3>
+          <ul>
+            <li><code>.gherkinrc.json</code> - Configuration (ESM format)</li>
+            <li><code>features/database.feature</code> - In-memory database service</li>
+            <li><code>features/validation.feature</code> - Input validation utilities</li>
+            <li><code>features/users.feature</code> - User CRUD operations</li>
+            <li><code>features/products.feature</code> - Product CRUD operations</li>
+            <li><code>features/auth.feature</code> - Authentication service</li>
+            <li><code>features/responses.feature</code> - HTTP response formatting</li>
+            <li><code>features/health.feature</code> - Health check endpoint</li>
+            <li><code>features/app.feature</code> - Express.js application</li>
+          </ul>
+
+          <h3>Architecture</h3>
+          <pre><code>┌─────────────────┐     ┌─────────────────┐
+│  UsersService   │────▶│ DatabaseService │
+└─────────────────┘     │    (Stateful)   │
+                        │                 │
+┌─────────────────┐     │  collections:   │
+│ProductsService  │────▶│   - users       │
+└─────────────────┘     │   - products    │
+                        │                 │
+┌─────────────────┐     │  auto-increment │
+│  AuthService    │────▶│                 │
+└─────────────────┘     └─────────────────┘
+        │
+        ▼
+┌─────────────────┐
+│       App       │ ◀── Express.js routes
+└─────────────────┘</code></pre>
+
+          <h3>Database Service (State Management)</h3>
+          <pre><code><span class="keyword">Feature:</span> DatabaseService
+  In-memory database service for storing application data.
+
+<span class="keyword">Background:</span>
+  <span class="keyword">Given</span> import date-fns as dateFns
+  <span class="keyword">And</span> initial state is { collections: {}, nextId: 1 }
+  <span class="keyword">And</span> state accepts messages:
+    | insert    | add record to collection with auto id |
+    | findById  | return record by id from collection   |
+    | findAll   | return all records from collection    |
+    | findWhere | return records matching filter        |
+    | update    | update record by id in collection     |
+    | delete    | remove record by id from collection   |
+    | clear     | remove all records from collection    |</code></pre>
+
+          <h3>API Endpoints</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Method</th>
+                <th>Path</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>GET</td>
+                <td><code>/health</code></td>
+                <td>Health check</td>
+              </tr>
+              <tr>
+                <td>POST</td>
+                <td><code>/auth/register</code></td>
+                <td>User registration</td>
+              </tr>
+              <tr>
+                <td>POST</td>
+                <td><code>/auth/login</code></td>
+                <td>User login</td>
+              </tr>
+              <tr>
+                <td>GET</td>
+                <td><code>/users</code></td>
+                <td>List all users</td>
+              </tr>
+              <tr>
+                <td>GET</td>
+                <td><code>/users/:id</code></td>
+                <td>Get user by ID</td>
+              </tr>
+              <tr>
+                <td>POST</td>
+                <td><code>/users</code></td>
+                <td>Create user</td>
+              </tr>
+              <tr>
+                <td>PUT</td>
+                <td><code>/users/:id</code></td>
+                <td>Update user</td>
+              </tr>
+              <tr>
+                <td>DELETE</td>
+                <td><code>/users/:id</code></td>
+                <td>Delete user</td>
+              </tr>
+              <tr>
+                <td>GET</td>
+                <td><code>/products</code></td>
+                <td>List all products</td>
+              </tr>
+              <tr>
+                <td>GET</td>
+                <td><code>/products/:id</code></td>
+                <td>Get product by ID</td>
+              </tr>
+              <tr>
+                <td>POST</td>
+                <td><code>/products</code></td>
+                <td>Create product</td>
+              </tr>
+              <tr>
+                <td>PUT</td>
+                <td><code>/products/:id</code></td>
+                <td>Update product</td>
+              </tr>
+              <tr>
+                <td>DELETE</td>
+                <td><code>/products/:id</code></td>
+                <td>Delete product</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p><strong>Best for:</strong> REST APIs, web services, backend applications</p>
+
+          <h2>Using Templates</h2>
+          <pre><code><span class="comment"># Interactive template selection</span>
+gherkin init my-project
+
+<span class="comment"># Non-interactive with specific template</span>
+gherkin init my-project --template api --yes
+
+<span class="comment"># Initialize in current directory</span>
+gherkin init . --template library</code></pre>
+
+          <div class="alert alert-info">
+            <strong>Tip:</strong> After initialization, run <code>gherkin start</code> to compile all features and start watching for changes.
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2024 GherkinLang. MIT License.</p>
+      <p><a href="https://github.com/duncannevin/gherkinlang-js">GitHub</a></p>
+    </div>
+  </footer>
+</body>
+</html>

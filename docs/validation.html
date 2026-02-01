@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Validation Rules - GherkinLang</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">🥒</span>
+        GherkinLang
+      </a>
+      <nav>
+        <ul>
+          <li><a href="getting-started.html">Get Started</a></li>
+          <li><a href="language.html">Language</a></li>
+          <li><a href="cli.html">CLI</a></li>
+          <li><a href="configuration.html">Config</a></li>
+          <li><a href="https://github.com/duncannevin/gherkinlang-js" target="_blank">GitHub</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="content-wrapper">
+        <aside class="sidebar">
+          <h3>On This Page</h3>
+          <ul>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#allowed">Allowed Patterns</a></li>
+            <li><a href="#forbidden">Forbidden Patterns</a></li>
+            <li><a href="#state-managers">State Managers</a></li>
+            <li><a href="#errors">Common Errors</a></li>
+          </ul>
+        </aside>
+
+        <div class="content">
+          <h1>Validation Rules</h1>
+          <p>GherkinLang validates generated code to ensure functional purity and best practices.</p>
+
+          <h2 id="overview">Overview</h2>
+          <p>Validation runs automatically after code generation and checks for:</p>
+          <ul>
+            <li><strong>Syntax</strong> - Valid JavaScript syntax</li>
+            <li><strong>Purity</strong> - Functional programming principles</li>
+            <li><strong>Lint</strong> - ESLint code quality rules</li>
+          </ul>
+
+          <p>Configure validation in <code>.gherkinrc.json</code>:</p>
+          <pre><code>{
+  <span class="string">"validation"</span>: {
+    <span class="string">"syntax"</span>: <span class="keyword">true</span>,
+    <span class="string">"purity"</span>: <span class="keyword">true</span>,
+    <span class="string">"lint"</span>: <span class="keyword">true</span>
+  }
+}</code></pre>
+
+          <h2 id="allowed">Allowed Patterns</h2>
+
+          <h3>Pure Functions</h3>
+          <pre><code><span class="comment">// ✅ Pure function - same input always gives same output</span>
+<span class="keyword">const</span> <span class="function">add</span> = (a, b) => a + b;
+
+<span class="comment">// ✅ Higher-order function</span>
+<span class="keyword">const</span> <span class="function">map</span> = (arr, fn) => arr.<span class="function">map</span>(fn);
+
+<span class="comment">// ✅ Recursion instead of loops</span>
+<span class="keyword">const</span> <span class="function">factorial</span> = (n) => n <= <span class="number">1</span> ? <span class="number">1</span> : n * <span class="function">factorial</span>(n - <span class="number">1</span>);</code></pre>
+
+          <h3>Immutable Operations</h3>
+          <pre><code><span class="comment">// ✅ Spread operator for new objects</span>
+<span class="keyword">const</span> <span class="function">updateUser</span> = (user, updates) => ({ ...user, ...updates });
+
+<span class="comment">// ✅ Array spread for new arrays</span>
+<span class="keyword">const</span> <span class="function">append</span> = (arr, item) => [...arr, item];
+
+<span class="comment">// ✅ Filter creates new array</span>
+<span class="keyword">const</span> <span class="function">removeById</span> = (arr, id) => arr.<span class="function">filter</span>(x => x.id !== id);</code></pre>
+
+          <h3>Allowed Globals</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Pattern</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>console.log</code>, <code>console.*</code></td>
+                <td>Logging is allowed</td>
+              </tr>
+              <tr>
+                <td><code>new Date()</code>, <code>Date.now()</code></td>
+                <td>Date operations are allowed</td>
+              </tr>
+              <tr>
+                <td><code>Math.floor</code>, <code>Math.ceil</code>, etc.</td>
+                <td>Deterministic Math methods allowed</td>
+              </tr>
+              <tr>
+                <td><code>JSON.parse</code>, <code>JSON.stringify</code></td>
+                <td>JSON operations allowed</td>
+              </tr>
+              <tr>
+                <td><code>Object.keys</code>, <code>Object.values</code></td>
+                <td>Non-mutating Object methods</td>
+              </tr>
+              <tr>
+                <td><code>Array.isArray</code></td>
+                <td>Type checking allowed</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2 id="forbidden">Forbidden Patterns</h2>
+
+          <h3>Imperative Loops</h3>
+          <pre><code><span class="comment">// ❌ for loop - use map/filter/reduce instead</span>
+<span class="keyword">for</span> (<span class="keyword">let</span> i = <span class="number">0</span>; i < arr.length; i++) { }
+
+<span class="comment">// ❌ while loop - use recursion instead</span>
+<span class="keyword">while</span> (condition) { }
+
+<span class="comment">// ❌ for...of - use array methods instead</span>
+<span class="keyword">for</span> (<span class="keyword">const</span> item <span class="keyword">of</span> items) { }</code></pre>
+
+          <h3>Mutations</h3>
+          <pre><code><span class="comment">// ❌ Push mutates the array</span>
+arr.<span class="function">push</span>(item);
+
+<span class="comment">// ❌ Sort mutates in place</span>
+arr.<span class="function">sort</span>();
+
+<span class="comment">// ❌ Direct property mutation</span>
+obj.prop = value;</code></pre>
+
+          <h3>Side Effects</h3>
+          <pre><code><span class="comment">// ❌ File system operations</span>
+fs.<span class="function">readFileSync</span>(<span class="string">'file.txt'</span>);
+
+<span class="comment">// ❌ Network requests</span>
+<span class="function">fetch</span>(<span class="string">'https://api.example.com'</span>);
+
+<span class="comment">// ❌ Timers</span>
+<span class="function">setTimeout</span>(() => {}, <span class="number">1000</span>);</code></pre>
+
+          <h3>Non-Deterministic</h3>
+          <pre><code><span class="comment">// ❌ Random numbers are non-deterministic</span>
+Math.<span class="function">random</span>();</code></pre>
+
+          <h3>Browser Globals</h3>
+          <pre><code><span class="comment">// ❌ DOM manipulation</span>
+document.<span class="function">getElementById</span>(<span class="string">'app'</span>);
+
+<span class="comment">// ❌ Browser storage</span>
+localStorage.<span class="function">setItem</span>(<span class="string">'key'</span>, <span class="string">'value'</span>);
+
+<span class="comment">// ❌ Window object</span>
+window.location.href;</code></pre>
+
+          <h3>Classes (Regular)</h3>
+          <pre><code><span class="comment">// ❌ Regular class declarations</span>
+<span class="keyword">class</span> MyClass {
+  <span class="function">method</span>() { }
+}</code></pre>
+
+          <h2 id="state-managers">State Manager Exception</h2>
+          <p>Classes that follow the state manager pattern <strong>are allowed</strong>:</p>
+          <pre><code><span class="comment">// ✅ State manager class with reduce + send methods</span>
+<span class="keyword">class</span> <span class="function">CounterService</span> {
+  <span class="function">constructor</span>() {
+    <span class="keyword">this</span>.state = { count: <span class="number">0</span> };
+  }
+
+  <span class="comment">// Pure reducer function</span>
+  <span class="function">reduce</span>(state, message) {
+    <span class="keyword">switch</span> (message.type) {
+      <span class="keyword">case</span> <span class="string">'increment'</span>:
+        <span class="keyword">return</span> { ...state, count: state.count + <span class="number">1</span> };
+      <span class="keyword">default</span>:
+        <span class="keyword">return</span> state;
+    }
+  }
+
+  <span class="comment">// Dispatch method</span>
+  <span class="function">send</span>(message) {
+    <span class="keyword">this</span>.state = <span class="keyword">this</span>.<span class="function">reduce</span>(<span class="keyword">this</span>.state, message);
+    <span class="keyword">return</span> <span class="keyword">this</span>.state;
+  }
+}</code></pre>
+
+          <p>Requirements for state manager classes:</p>
+          <ul>
+            <li>Must have a <code>reduce(state, message)</code> method</li>
+            <li>Must have a <code>send(message)</code> method</li>
+            <li>Reducer must be pure (return new state, not mutate)</li>
+          </ul>
+
+          <h2 id="errors">Common Validation Errors</h2>
+
+          <h3>Mutation Error</h3>
+          <pre><code>Error: 'push' mutates the array.
+Use immutable alternatives like spread with slice.</code></pre>
+          <p><strong>Fix:</strong> Use <code>[...arr, item]</code> instead of <code>arr.push(item)</code></p>
+
+          <h3>Forbidden Construct</h3>
+          <pre><code>Error: ForStatement is forbidden.
+Use functional alternatives like map, filter, or reduce.</code></pre>
+          <p><strong>Fix:</strong> Replace <code>for</code> loop with <code>map</code>, <code>filter</code>, or <code>reduce</code></p>
+
+          <h3>Side Effect</h3>
+          <pre><code>Error: 'fs.readFile' performs file I/O.
+Pure functions should not access the file system.</code></pre>
+          <p><strong>Fix:</strong> Pass file contents as a parameter instead of reading inside the function</p>
+
+          <h3>Global Access</h3>
+          <pre><code>Error: 'window' is a global object.
+Avoid accessing global state.</code></pre>
+          <p><strong>Fix:</strong> Pass required values as function parameters</p>
+
+          <div class="alert alert-info">
+            <strong>Tip:</strong> Use <code>--verbose</code> flag to see detailed validation errors with code snippets.
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2024 GherkinLang. MIT License.</p>
+      <p><a href="https://github.com/duncannevin/gherkinlang-js">GitHub</a></p>
+    </div>
+  </footer>
+</body>
+</html>

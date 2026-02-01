@@ -258,6 +258,60 @@ const isModuleLevelStatement = (path) => {
 };
 
 /**
+ * Checks if a class follows the state manager pattern.
+ * A state manager class has a 'reduce' method that takes state and message,
+ * and returns new state (pure reducer pattern).
+ *
+ * @param {Object} classNode - Babel ClassDeclaration or ClassExpression node
+ * @returns {boolean} True if the class follows state manager pattern
+ */
+const isStateManagerClass = (classNode) => {
+  if (!classNode.body || !classNode.body.body) {
+    return false;
+  }
+
+  const methods = classNode.body.body;
+
+  // Look for a 'reduce' method - the hallmark of a state manager class
+  const hasReduceMethod = methods.some(
+    (member) =>
+      member.type === 'ClassMethod' &&
+      member.key.type === 'Identifier' &&
+      member.key.name === 'reduce'
+  );
+
+  // Also check for 'send' method which dispatches messages
+  const hasSendMethod = methods.some(
+    (member) =>
+      member.type === 'ClassMethod' &&
+      member.key.type === 'Identifier' &&
+      member.key.name === 'send'
+  );
+
+  // A state manager class must have both reduce and send methods
+  return hasReduceMethod && hasSendMethod;
+};
+
+/**
+ * Checks if a path is inside a state manager class.
+ *
+ * @param {Object} path - Babel path object
+ * @returns {boolean} True if inside a state manager class
+ */
+const isInsideStateManagerClass = (path) => {
+  let current = path.parentPath;
+
+  while (current) {
+    if (current.isClassDeclaration() || current.isClassExpression()) {
+      return isStateManagerClass(current.node);
+    }
+    current = current.parentPath;
+  }
+
+  return false;
+};
+
+/**
  * Checks if a node is within a function scope (local variable).
  * Used to allow local mutations within function scope.
  *
@@ -407,6 +461,11 @@ const validatePurity = (ast, code, options = {}) => {
       },
 
       ClassDeclaration(path) {
+        // Allow state manager classes (classes with reduce + send methods)
+        if (isStateManagerClass(path.node)) {
+          return;
+        }
+
         addViolation(
           'forbidden_construct',
           'ClassDeclaration',
@@ -416,6 +475,11 @@ const validatePurity = (ast, code, options = {}) => {
       },
 
       ClassExpression(path) {
+        // Allow state manager classes (classes with reduce + send methods)
+        if (isStateManagerClass(path.node)) {
+          return;
+        }
+
         addViolation(
           'forbidden_construct',
           'ClassExpression',
@@ -425,6 +489,11 @@ const validatePurity = (ast, code, options = {}) => {
       },
 
       ThisExpression(path) {
+        // Allow 'this' inside state manager classes
+        if (isInsideStateManagerClass(path)) {
+          return;
+        }
+
         addViolation(
           'forbidden_construct',
           'ThisExpression',
@@ -468,6 +537,11 @@ const validatePurity = (ast, code, options = {}) => {
 
           // Allow local object mutation within function scope
           if (objectName && isLocalVariable(path, objectName)) {
+            return;
+          }
+
+          // Allow this.property assignments inside state manager classes
+          if (left.object.type === 'ThisExpression' && isInsideStateManagerClass(path)) {
             return;
           }
 
@@ -710,4 +784,6 @@ export {
   isAllowedPurePattern,
   isLocalVariable,
   isFunctionParameter,
+  isStateManagerClass,
+  isInsideStateManagerClass,
 };

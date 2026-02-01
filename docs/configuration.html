@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Configuration - GherkinLang</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">🥒</span>
+        GherkinLang
+      </a>
+      <nav>
+        <ul>
+          <li><a href="getting-started.html">Get Started</a></li>
+          <li><a href="language.html">Language</a></li>
+          <li><a href="cli.html">CLI</a></li>
+          <li><a href="configuration.html" class="active">Config</a></li>
+          <li><a href="https://github.com/duncannevin/gherkinlang-js" target="_blank">GitHub</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="content-wrapper">
+        <aside class="sidebar">
+          <h3>On This Page</h3>
+          <ul>
+            <li><a href="#config-file">Config File</a></li>
+            <li><a href="#output">Output Options</a></li>
+            <li><a href="#ai">AI Options</a></li>
+            <li><a href="#validation">Validation</a></li>
+            <li><a href="#generation">Generation</a></li>
+            <li><a href="#example">Full Example</a></li>
+          </ul>
+        </aside>
+
+        <div class="content">
+          <h1>Configuration</h1>
+          <p>Configure GherkinLang behavior with the <code>.gherkinrc.json</code> file.</p>
+
+          <h2 id="config-file">Configuration File</h2>
+          <p>GherkinLang looks for configuration in the following order:</p>
+          <ol>
+            <li>Path specified with <code>--config</code> option</li>
+            <li><code>GHERKIN_CONFIG</code> environment variable</li>
+            <li><code>.gherkinrc.json</code> in the current directory</li>
+            <li><code>.gherkinrc.json</code> in parent directories (up to root)</li>
+          </ol>
+
+          <h3>Creating a Config File</h3>
+          <p>Run <code>gherkin init</code> to generate a config file, or create one manually:</p>
+          <pre><code>{
+  <span class="string">"output"</span>: {
+    <span class="string">"directory"</span>: <span class="string">"dist"</span>,
+    <span class="string">"moduleFormat"</span>: <span class="string">"commonjs"</span>,
+    <span class="string">"target"</span>: <span class="string">"javascript"</span>
+  }
+}</code></pre>
+
+          <h2 id="output">Output Options</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Option</th>
+                <th>Type</th>
+                <th>Default</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>output.directory</code></td>
+                <td>string</td>
+                <td><code>"dist"</code></td>
+                <td>Output directory for compiled files</td>
+              </tr>
+              <tr>
+                <td><code>output.moduleFormat</code></td>
+                <td>string</td>
+                <td><code>"commonjs"</code></td>
+                <td>Module format: <code>"commonjs"</code> or <code>"esm"</code></td>
+              </tr>
+              <tr>
+                <td><code>output.target</code></td>
+                <td>string</td>
+                <td><code>"javascript"</code></td>
+                <td>Target language: <code>"javascript"</code> or <code>"elixir"</code></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>Module Format Examples</h3>
+          <p><strong>CommonJS</strong> (default):</p>
+          <pre><code><span class="keyword">const</span> add = (a, b) => a + b;
+<span class="keyword">module</span>.exports = { add };</code></pre>
+
+          <p><strong>ESM</strong>:</p>
+          <pre><code><span class="keyword">export const</span> add = (a, b) => a + b;</code></pre>
+
+          <h2 id="ai">AI Options</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Option</th>
+                <th>Type</th>
+                <th>Default</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>ai.model</code></td>
+                <td>string</td>
+                <td><code>"claude-sonnet-4-20250514"</code></td>
+                <td>Claude model to use for generation</td>
+              </tr>
+              <tr>
+                <td><code>ai.maxRetries</code></td>
+                <td>number</td>
+                <td><code>3</code></td>
+                <td>Maximum retry attempts on failure</td>
+              </tr>
+              <tr>
+                <td><code>ai.temperature</code></td>
+                <td>number</td>
+                <td><code>0</code></td>
+                <td>Generation temperature (0-1)</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="alert alert-info">
+            <strong>Note:</strong> Lower temperature values (closer to 0) produce more deterministic output.
+          </div>
+
+          <h2 id="validation">Validation Options</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Option</th>
+                <th>Type</th>
+                <th>Default</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>validation.syntax</code></td>
+                <td>boolean</td>
+                <td><code>true</code></td>
+                <td>Enable JavaScript syntax validation</td>
+              </tr>
+              <tr>
+                <td><code>validation.purity</code></td>
+                <td>boolean</td>
+                <td><code>true</code></td>
+                <td>Enable functional purity checks</td>
+              </tr>
+              <tr>
+                <td><code>validation.lint</code></td>
+                <td>boolean</td>
+                <td><code>true</code></td>
+                <td>Enable ESLint validation</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>Purity Checks</h3>
+          <p>When <code>validation.purity</code> is enabled, generated code is checked for:</p>
+          <ul>
+            <li>No imperative loops (<code>for</code>, <code>while</code>)</li>
+            <li>No file system operations (<code>fs.*</code>)</li>
+            <li>No network calls (<code>fetch</code>, <code>XMLHttpRequest</code>)</li>
+            <li>No timers (<code>setTimeout</code>, <code>setInterval</code>)</li>
+            <li>No browser globals (<code>window</code>, <code>document</code>)</li>
+            <li>No <code>Math.random()</code></li>
+          </ul>
+
+          <p><strong>Allowed:</strong></p>
+          <ul>
+            <li><code>console.log</code> and console methods (for logging)</li>
+            <li><code>Date</code> and <code>Date.now()</code></li>
+            <li>State manager classes (with <code>reduce</code> + <code>send</code> methods)</li>
+          </ul>
+
+          <h2 id="generation">Generation Options</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Option</th>
+                <th>Type</th>
+                <th>Default</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>generation.jsdoc</code></td>
+                <td>boolean</td>
+                <td><code>true</code></td>
+                <td>Generate JSDoc comments</td>
+              </tr>
+              <tr>
+                <td><code>generation.tests</code></td>
+                <td>boolean</td>
+                <td><code>true</code></td>
+                <td>Generate Jest test files</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2 id="example">Full Configuration Example</h2>
+          <pre><code>{
+  <span class="string">"output"</span>: {
+    <span class="string">"directory"</span>: <span class="string">"dist"</span>,
+    <span class="string">"moduleFormat"</span>: <span class="string">"esm"</span>,
+    <span class="string">"target"</span>: <span class="string">"javascript"</span>
+  },
+  <span class="string">"ai"</span>: {
+    <span class="string">"model"</span>: <span class="string">"claude-sonnet-4-20250514"</span>,
+    <span class="string">"maxRetries"</span>: <span class="number">3</span>,
+    <span class="string">"temperature"</span>: <span class="number">0</span>
+  },
+  <span class="string">"validation"</span>: {
+    <span class="string">"syntax"</span>: <span class="keyword">true</span>,
+    <span class="string">"purity"</span>: <span class="keyword">true</span>,
+    <span class="string">"lint"</span>: <span class="keyword">true</span>
+  },
+  <span class="string">"generation"</span>: {
+    <span class="string">"jsdoc"</span>: <span class="keyword">true</span>,
+    <span class="string">"tests"</span>: <span class="keyword">true</span>
+  }
+}</code></pre>
+
+          <h3>CLI Override</h3>
+          <p>Command-line options override config file settings:</p>
+          <pre><code><span class="comment"># Override output directory</span>
+gherkin compile features/ --output lib/
+
+<span class="comment"># Override module format</span>
+gherkin compile features/ --format esm
+
+<span class="comment"># Disable tests for single compile</span>
+gherkin compile features/ --no-tests</code></pre>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2024 GherkinLang. MIT License.</p>
+      <p><a href="https://github.com/duncannevin/gherkinlang-js">GitHub</a></p>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Language Guide - GherkinLang</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">🥒</span>
+        GherkinLang
+      </a>
+      <nav>
+        <ul>
+          <li><a href="getting-started.html">Get Started</a></li>
+          <li><a href="language.html" class="active">Language</a></li>
+          <li><a href="cli.html">CLI</a></li>
+          <li><a href="configuration.html">Config</a></li>
+          <li><a href="https://github.com/duncannevin/gherkinlang-js" target="_blank">GitHub</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="content-wrapper">
+        <aside class="sidebar">
+          <h3>On This Page</h3>
+          <ul>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#features">Features</a></li>
+            <li><a href="#scenarios">Scenarios</a></li>
+            <li><a href="#background">Background</a></li>
+            <li><a href="#imports">Imports</a></li>
+            <li><a href="#state-management">State Management</a></li>
+            <li><a href="#collections">Collections</a></li>
+            <li><a href="#patterns">Common Patterns</a></li>
+          </ul>
+        </aside>
+
+        <div class="content">
+          <h1>Language Guide</h1>
+          <p>GherkinLang extends standard Gherkin syntax with features for code generation.</p>
+
+          <h2 id="overview">Overview</h2>
+          <p>GherkinLang files use the <code>.feature</code> extension and contain:</p>
+          <ul>
+            <li><strong>Feature</strong> - The module being defined</li>
+            <li><strong>Background</strong> - Shared setup including imports and state</li>
+            <li><strong>Scenarios</strong> - Individual functions or behaviors</li>
+          </ul>
+
+          <h2 id="features">Features</h2>
+          <p>Every file starts with a Feature declaration:</p>
+          <pre><code><span class="keyword">Feature:</span> Calculator
+  A simple calculator for mathematical operations.
+  Provides pure functions for arithmetic.</code></pre>
+
+          <p>The feature name becomes the module name. Lines after the feature name are treated as documentation.</p>
+
+          <div class="alert alert-info">
+            <strong>Naming:</strong> Feature names should use PascalCase without spaces (e.g., <code>UserService</code>, <code>DatabaseService</code>).
+          </div>
+
+          <h2 id="scenarios">Scenarios</h2>
+          <p>Scenarios define individual functions or behaviors:</p>
+          <pre><code><span class="keyword">Scenario:</span> Add two numbers
+  <span class="keyword">Given</span> two numbers a and b
+  <span class="keyword">When</span> I add them together
+  <span class="keyword">Then</span> the result is a + b</code></pre>
+
+          <h3>Scenario Keywords</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Keyword</th>
+                <th>Purpose</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>Given</code></td>
+                <td>Define inputs, preconditions, parameters</td>
+              </tr>
+              <tr>
+                <td><code>When</code></td>
+                <td>Describe the action or transformation</td>
+              </tr>
+              <tr>
+                <td><code>Then</code></td>
+                <td>Specify the expected output or result</td>
+              </tr>
+              <tr>
+                <td><code>And</code></td>
+                <td>Continue any of the above</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>Explicit Function Definition</h3>
+          <p>For clearer function signatures, use the explicit pattern:</p>
+          <pre><code><span class="keyword">Scenario:</span> createUser defines a function
+  <span class="keyword">Given</span> function createUser accepts name, email, and password
+  <span class="keyword">When</span> I validate the input
+  <span class="keyword">And</span> I hash the password
+  <span class="keyword">Then</span> return the new user object</code></pre>
+
+          <h2 id="background">Background</h2>
+          <p>The Background section defines shared setup for all scenarios:</p>
+          <pre><code><span class="keyword">Background:</span>
+  <span class="keyword">Given</span> import lodash as _
+  <span class="keyword">And</span> import date-fns as dateFns</code></pre>
+
+          <h2 id="imports">Imports</h2>
+          <p>Import other features or external libraries in the Background:</p>
+          <pre><code><span class="keyword">Background:</span>
+  <span class="comment"># Import another feature</span>
+  <span class="keyword">Given</span> import DatabaseService as db
+  
+  <span class="comment"># Import external npm package</span>
+  <span class="keyword">And</span> import lodash as _
+  <span class="keyword">And</span> import date-fns as dateFns</code></pre>
+
+          <p>Imported features are resolved from the same project. External packages must be installed via npm.</p>
+
+          <h2 id="state-management">State Management</h2>
+          <p>GherkinLang supports stateful services using a pure reducer pattern:</p>
+          <pre><code><span class="keyword">Feature:</span> CounterService
+  A simple counter with increment/decrement operations.
+
+<span class="keyword">Background:</span>
+  <span class="keyword">Given</span> initial state is { count: 0 }
+  <span class="keyword">And</span> state accepts messages:
+    | increment | add 1 to count    |
+    | decrement | subtract 1        |
+    | reset     | set count to 0    |
+
+<span class="keyword">Scenario:</span> increment defines a message handler
+  <span class="keyword">Given</span> state contains count
+  <span class="keyword">When</span> receive increment message
+  <span class="keyword">Then</span> return new state with count + 1
+
+<span class="keyword">Scenario:</span> getCount queries state
+  <span class="keyword">When</span> I query the current count
+  <span class="keyword">Then</span> return the count value</code></pre>
+
+          <h3>Generated JavaScript</h3>
+          <p>State management generates a class with a pure reducer:</p>
+          <pre><code><span class="keyword">class</span> <span class="function">CounterService</span> {
+  <span class="function">constructor</span>() {
+    <span class="keyword">this</span>.state = { count: <span class="number">0</span> };
+  }
+
+  <span class="function">reduce</span>(state, message) {
+    <span class="keyword">switch</span> (message.type) {
+      <span class="keyword">case</span> <span class="string">'increment'</span>:
+        <span class="keyword">return</span> { ...state, count: state.count + <span class="number">1</span> };
+      <span class="keyword">case</span> <span class="string">'decrement'</span>:
+        <span class="keyword">return</span> { ...state, count: state.count - <span class="number">1</span> };
+      <span class="keyword">case</span> <span class="string">'reset'</span>:
+        <span class="keyword">return</span> { ...state, count: <span class="number">0</span> };
+      <span class="keyword">default</span>:
+        <span class="keyword">return</span> state;
+    }
+  }
+
+  <span class="function">send</span>(message) {
+    <span class="keyword">this</span>.state = <span class="keyword">this</span>.<span class="function">reduce</span>(<span class="keyword">this</span>.state, message);
+    <span class="keyword">return</span> <span class="keyword">this</span>.state;
+  }
+
+  <span class="function">getCount</span>() {
+    <span class="keyword">return</span> <span class="keyword">this</span>.state.count;
+  }
+}</code></pre>
+
+          <h2 id="collections">Collections</h2>
+          <p>Describe collection operations naturally:</p>
+          <pre><code><span class="keyword">Scenario:</span> Filter active users
+  <span class="keyword">Given</span> an array of users
+  <span class="keyword">When</span> I filter by active status
+  <span class="keyword">Then</span> only users with active = true are returned
+
+<span class="keyword">Scenario:</span> Get user names
+  <span class="keyword">Given</span> an array of users
+  <span class="keyword">When</span> I extract all names
+  <span class="keyword">Then</span> an array of name strings is returned
+
+<span class="keyword">Scenario:</span> Calculate total price
+  <span class="keyword">Given</span> an array of items with prices
+  <span class="keyword">When</span> I sum all prices
+  <span class="keyword">Then</span> the total price is returned</code></pre>
+
+          <p>These generate idiomatic functional code using <code>filter</code>, <code>map</code>, <code>reduce</code>.</p>
+
+          <h2 id="patterns">Common Patterns</h2>
+
+          <h3>Validation</h3>
+          <pre><code><span class="keyword">Scenario:</span> Validate email format
+  <span class="keyword">Given</span> an email string
+  <span class="keyword">When</span> I validate the email format
+  <span class="keyword">Then</span> return true if valid, false otherwise</code></pre>
+
+          <h3>Transformation</h3>
+          <pre><code><span class="keyword">Scenario:</span> Capitalize words
+  <span class="keyword">Given</span> a string of words
+  <span class="keyword">When</span> I capitalize each word
+  <span class="keyword">Then</span> each word starts with uppercase</code></pre>
+
+          <h3>Conditional Logic</h3>
+          <pre><code><span class="keyword">Scenario:</span> Process payment
+  <span class="keyword">Given</span> a payment amount and user balance
+  <span class="keyword">When</span> the balance is sufficient
+  <span class="keyword">Then</span> deduct the amount and return success
+  <span class="keyword">Otherwise</span>
+  <span class="keyword">Then</span> return insufficient funds error</code></pre>
+
+          <h3>Error Handling</h3>
+          <pre><code><span class="keyword">Scenario:</span> Safe divide
+  <span class="keyword">Given</span> a dividend and divisor
+  <span class="keyword">When</span> divisor is zero
+  <span class="keyword">Then</span> return null or error result
+  <span class="keyword">Otherwise</span>
+  <span class="keyword">Then</span> return the quotient</code></pre>
+
+          <div class="alert alert-success">
+            <strong>Best Practice:</strong> Write scenarios that describe <em>what</em> should happen, not <em>how</em>. Let the AI determine the implementation details.
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2024 GherkinLang. MIT License.</p>
+      <p><a href="https://github.com/duncannevin/gherkinlang-js">GitHub</a></p>
+    </div>
+  </footer>
+</body>
+</html>

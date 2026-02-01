@@ -47,7 +47,7 @@ const FORBIDDEN_IDENTIFIERS = Object.freeze([
   '__filename',
 
   // Forbidden constructors
-  'Date', // new Date() is non-deterministic
+  // Note: Date is allowed for timestamp operations
   'RegExp', // Allow RegExp literals, but not constructor (can have side effects with lastIndex)
 ]);
 
@@ -57,22 +57,7 @@ const FORBIDDEN_IDENTIFIERS = Object.freeze([
  * @type {readonly string[]}
  */
 const FORBIDDEN_MEMBER_EXPRESSIONS = Object.freeze([
-  // Console methods (side effects: output)
-  'console.log',
-  'console.error',
-  'console.warn',
-  'console.info',
-  'console.debug',
-  'console.trace',
-  'console.dir',
-  'console.table',
-  'console.time',
-  'console.timeEnd',
-  'console.group',
-  'console.groupEnd',
-  'console.assert',
-  'console.count',
-  'console.clear',
+  // Note: console.* methods are allowed for logging purposes
 
   // File system (side effects: IO)
   'fs.readFile',
@@ -285,7 +270,7 @@ const DEFAULT_ESLINT_RULES = Object.freeze({
   'functional/no-this-expressions': 'error',
 
   // Additional quality rules
-  'no-console': 'error',
+  'no-console': 'off',
   eqeqeq: ['error', 'always'],
   'no-eval': 'error',
   'no-implied-eval': 'error',

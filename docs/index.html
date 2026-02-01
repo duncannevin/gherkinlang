@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GherkinLang - Behavior-Driven Code Generation</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">🥒</span>
+        GherkinLang
+      </a>
+      <nav>
+        <ul>
+          <li><a href="getting-started.html">Get Started</a></li>
+          <li><a href="language.html">Language</a></li>
+          <li><a href="cli.html">CLI</a></li>
+          <li><a href="configuration.html">Config</a></li>
+          <li><a href="https://github.com/duncannevin/gherkinlang-js" target="_blank">GitHub</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="container">
+      <h1>Write Behavior, Generate Code</h1>
+      <p>GherkinLang transforms Gherkin specifications into production-ready, pure functional code using AI.</p>
+      <div class="hero-buttons">
+        <a href="getting-started.html" class="btn btn-primary">Get Started</a>
+        <a href="language.html" class="btn btn-secondary">Learn the Language</a>
+      </div>
+    </div>
+  </section>
+
+  <main>
+    <div class="container">
+      <div class="feature-grid">
+        <div class="feature">
+          <div class="feature-icon">📝</div>
+          <h3>Behavior-First</h3>
+          <p>Write specifications in natural Gherkin syntax. Describe what your code should do, not how.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">🤖</div>
+          <h3>AI-Powered</h3>
+          <p>Claude transforms your specifications into clean, functional JavaScript or Elixir code.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">✨</div>
+          <h3>Pure Functions</h3>
+          <p>Generated code follows functional programming principles: immutable, testable, predictable.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">🔄</div>
+          <h3>Watch Mode</h3>
+          <p>Automatic recompilation on file changes. Edit your specs and see code update instantly.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">📦</div>
+          <h3>Project Templates</h3>
+          <p>Bootstrap new projects with ready-to-use templates for libraries, APIs, and more.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">🧪</div>
+          <h3>Auto-Generated Tests</h3>
+          <p>Get Jest test files generated automatically from your Gherkin scenarios.</p>
+        </div>
+      </div>
+
+      <h2>Quick Example</h2>
+      <p>Write a feature specification:</p>
+      <pre><code><span class="keyword">Feature:</span> Calculator
+  A simple calculator for basic math operations.
+
+<span class="keyword">Scenario:</span> Add two numbers
+  <span class="keyword">Given</span> two numbers a and b
+  <span class="keyword">When</span> I add them together
+  <span class="keyword">Then</span> the result is a + b
+
+<span class="keyword">Scenario:</span> Calculate factorial
+  <span class="keyword">Given</span> a positive integer n
+  <span class="keyword">When</span> I calculate the factorial
+  <span class="keyword">Then</span> the result is n! (n factorial)</code></pre>
+
+      <p>Run the compiler:</p>
+      <pre><code>$ gherkin compile features/calculator.feature</code></pre>
+
+      <p>Get production-ready JavaScript:</p>
+      <pre><code><span class="comment">/**
+ * Add two numbers
+ * @param {number} a - First number
+ * @param {number} b - Second number
+ * @returns {number} The sum
+ */</span>
+<span class="keyword">export const</span> <span class="function">add</span> = (a, b) => a + b;
+
+<span class="comment">/**
+ * Calculate factorial
+ * @param {number} n - Positive integer
+ * @returns {number} n factorial
+ */</span>
+<span class="keyword">export const</span> <span class="function">factorial</span> = (n) =>
+  n <= <span class="number">1</span> ? <span class="number">1</span> : n * <span class="function">factorial</span>(n - <span class="number">1</span>);</code></pre>
+
+      <h2>Get Started</h2>
+      <div class="card-grid">
+        <a href="getting-started.html" class="card">
+          <h3>Installation</h3>
+          <p>Install GherkinLang and create your first project in minutes.</p>
+        </a>
+        <a href="language.html" class="card">
+          <h3>Language Guide</h3>
+          <p>Learn the GherkinLang syntax: features, scenarios, imports, and state management.</p>
+        </a>
+        <a href="cli.html" class="card">
+          <h3>CLI Reference</h3>
+          <p>Complete guide to the command-line interface and all available commands.</p>
+        </a>
+        <a href="templates.html" class="card">
+          <h3>Project Templates</h3>
+          <p>Explore available templates: basic, library, and full Express.js API.</p>
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2024 GherkinLang. MIT License.</p>
+      <p><a href="https://github.com/duncannevin/gherkinlang-js">GitHub</a></p>
+    </div>
+  </footer>
+</body>
+</html>

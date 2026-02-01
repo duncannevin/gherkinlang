@@ -10,7 +10,8 @@
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "lint": "eslint src/**/*.js",
-    "format": "prettier --write \"**/*.{js,md,json}\""
+    "format": "prettier --write \"**/*.{js,md,json}\"",
+    "docs": "npx serve ./docs"
   },
   "keywords": [
     "gherkin",

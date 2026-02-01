@@ -4,8 +4,8 @@
  * @module test/unit/validation/purity
  */
 
-const { parse } = require('@babel/parser');
-const {
+import { parse } from '@babel/parser';
+import {
   validatePurity,
   createPurityViolation,
   getNodeLocation,
@@ -14,7 +14,8 @@ const {
   getMutatingArrayMethod,
   getMutatingObjectMethod,
   isAllowedPurePattern,
-} = require('../../../src/validation/purity');
+  isStateManagerClass,
+} from '../../../src/validation/purity.js';
 
 /**
  * Helper to parse code and validate purity.
@@ -396,6 +397,106 @@ describe('validatePurity', () => {
         expect(result.violations.some((v) => v.pattern === 'WithStatement')).toBe(true);
       });
     });
+
+    describe('state manager classes', () => {
+      it('should allow class with reduce and send methods', () => {
+        const code = `
+          class CounterState {
+            constructor() {
+              this.state = { count: 0 };
+            }
+            
+            reduce(state, message) {
+              switch (message.type) {
+                case 'increment':
+                  return { ...state, count: state.count + 1 };
+                default:
+                  return state;
+              }
+            }
+            
+            send(message) {
+              this.state = this.reduce(this.state, message);
+              return this.state;
+            }
+            
+            get() {
+              return this.state;
+            }
+          }
+        `;
+        const result = checkPurity(code);
+
+        expect(result.valid).toBe(true);
+        expect(result.violations).toHaveLength(0);
+      });
+
+      it('should allow this keyword inside state manager class', () => {
+        const code = `
+          class DatabaseService {
+            constructor() {
+              this.state = { collections: {}, nextId: 1 };
+            }
+            
+            reduce(state, message) {
+              return { ...state };
+            }
+            
+            send(message) {
+              this.state = this.reduce(this.state, message);
+              return this.state;
+            }
+            
+            getState() {
+              return this.state;
+            }
+          }
+        `;
+        const result = checkPurity(code);
+
+        expect(result.valid).toBe(true);
+      });
+
+      it('should reject class without reduce method', () => {
+        const code = `
+          class RegularClass {
+            constructor() {
+              this.value = 0;
+            }
+            
+            send(message) {
+              this.value = message;
+            }
+          }
+        `;
+        const result = checkPurity(code);
+
+        expect(result.valid).toBe(false);
+        expect(result.violations.some((v) => v.pattern === 'ClassDeclaration')).toBe(true);
+      });
+
+      it('should reject class without send method', () => {
+        const code = `
+          class ReducerOnly {
+            reduce(state, message) {
+              return state;
+            }
+          }
+        `;
+        const result = checkPurity(code);
+
+        expect(result.valid).toBe(false);
+        expect(result.violations.some((v) => v.pattern === 'ClassDeclaration')).toBe(true);
+      });
+
+      it('should reject this keyword outside state manager class', () => {
+        const code = 'const obj = { method() { return this.value; } };';
+        const result = checkPurity(code);
+
+        expect(result.valid).toBe(false);
+        expect(result.violations.some((v) => v.pattern === 'ThisExpression')).toBe(true);
+      });
+    });
   });
 
   describe('mutation patterns', () => {
@@ -654,54 +755,41 @@ describe('validatePurity', () => {
 
   describe('side effects', () => {
     describe('console methods', () => {
-      it('should detect console.log', () => {
+      it('should allow console.log for logging purposes', () => {
         const result = checkPurity('console.log("hello");');
 
-        expect(result.valid).toBe(false);
-        expect(result.violations[0].violationType).toBe('side_effect');
-        expect(result.violations[0].pattern).toBe('console.log');
+        expect(result.valid).toBe(true);
+        expect(result.violations).toHaveLength(0);
       });
 
-      it('should detect console.error', () => {
+      it('should allow console.error', () => {
         const result = checkPurity('console.error("error");');
 
-        expect(result.valid).toBe(false);
-        expect(result.violations[0].pattern).toBe('console.error');
+        expect(result.valid).toBe(true);
       });
 
-      it('should detect console.warn', () => {
+      it('should allow console.warn', () => {
         const result = checkPurity('console.warn("warning");');
 
-        expect(result.valid).toBe(false);
-        expect(result.violations[0].pattern).toBe('console.warn');
+        expect(result.valid).toBe(true);
       });
 
-      it('should detect console.info', () => {
+      it('should allow console.info', () => {
         const result = checkPurity('console.info("info");');
 
-        expect(result.valid).toBe(false);
-        expect(result.violations[0].pattern).toBe('console.info');
+        expect(result.valid).toBe(true);
       });
 
-      it('should detect console.debug', () => {
+      it('should allow console.debug', () => {
         const result = checkPurity('console.debug("debug");');
 
-        expect(result.valid).toBe(false);
-        expect(result.violations[0].pattern).toBe('console.debug');
+        expect(result.valid).toBe(true);
       });
 
-      it('should detect console.table', () => {
+      it('should allow console.table', () => {
         const result = checkPurity('console.table(data);');
 
-        expect(result.valid).toBe(false);
-        expect(result.violations[0].pattern).toBe('console.table');
-      });
-
-      it('should include helpful message for console', () => {
-        const result = checkPurity('console.log("hello");');
-
-        expect(result.violations[0].message).toContain('console');
-        expect(result.violations[0].message).toContain('logging');
+        expect(result.valid).toBe(true);
       });
     });
 
@@ -812,11 +900,11 @@ describe('validatePurity', () => {
         expect(result.violations[0].pattern).toBe('Math.random');
       });
 
-      it('should detect Date constructor', () => {
+      it('should allow Date constructor', () => {
         const result = checkPurity('const now = new Date();');
 
-        expect(result.valid).toBe(false);
-        expect(result.violations[0].pattern).toBe('Date');
+        expect(result.valid).toBe(true);
+        expect(result.violations).toHaveLength(0);
       });
 
       it('should include message about determinism', () => {
@@ -913,7 +1001,7 @@ describe('validatePurity', () => {
 
   describe('violation details', () => {
     it('should include line and column in violation location', () => {
-      const code = 'const x = 1;\nconsole.log("test");\nconst y = 2;';
+      const code = 'const x = 1;\nfs.readFile("test.txt", cb);\nconst y = 2;';
       const result = checkPurity(code);
 
       expect(result.violations[0].location).toBeDefined();
@@ -922,19 +1010,19 @@ describe('validatePurity', () => {
     });
 
     it('should include violationType field', () => {
-      const result = checkPurity('console.log("test");');
+      const result = checkPurity('fs.readFile("test.txt", cb);');
 
       expect(result.violations[0].violationType).toBe('side_effect');
     });
 
     it('should include pattern field', () => {
-      const result = checkPurity('console.log("test");');
+      const result = checkPurity('fs.readFile("test.txt", cb);');
 
-      expect(result.violations[0].pattern).toBe('console.log');
+      expect(result.violations[0].pattern).toBe('fs.readFile');
     });
 
     it('should include message field', () => {
-      const result = checkPurity('console.log("test");');
+      const result = checkPurity('fs.readFile("test.txt", cb);');
 
       expect(result.violations[0].message).toBeDefined();
       expect(typeof result.violations[0].message).toBe('string');
@@ -942,14 +1030,14 @@ describe('validatePurity', () => {
     });
 
     it('should include code snippet in violation', () => {
-      const result = checkPurity('console.log("test");');
+      const result = checkPurity('fs.readFile("test.txt", cb);');
 
       expect(result.violations[0].code).toBeDefined();
       expect(typeof result.violations[0].code).toBe('string');
     });
 
     it('should include file in location when filename option is provided', () => {
-      const result = checkPurity('console.log("test");', { filename: 'test.js' });
+      const result = checkPurity('fs.readFile("test.txt", cb);', { filename: 'test.js' });
 
       expect(result.violations[0].location.file).toBe('test.js');
     });
@@ -958,7 +1046,7 @@ describe('validatePurity', () => {
   describe('options', () => {
     describe('filename option', () => {
       it('should include filename in violation locations', () => {
-        const result = checkPurity('console.log("test");', { filename: 'myfile.js' });
+        const result = checkPurity('fs.readFile("test.txt", cb);', { filename: 'myfile.js' });
 
         expect(result.violations[0].location.file).toBe('myfile.js');
       });
@@ -986,8 +1074,8 @@ describe('validatePurity', () => {
 
     describe('allowedMethods option', () => {
       it('should allow specified member expressions', () => {
-        const result = checkPurity('console.log("debug");', {
-          allowedMethods: ['console.log'],
+        const result = checkPurity('fs.readFile("test.txt", cb);', {
+          allowedMethods: ['fs.readFile'],
         });
 
         expect(result.valid).toBe(true);
@@ -995,12 +1083,12 @@ describe('validatePurity', () => {
       });
 
       it('should still detect other forbidden methods', () => {
-        const result = checkPurity('console.log("ok"); console.error("fail");', {
-          allowedMethods: ['console.log'],
+        const result = checkPurity('fs.readFile("ok", cb); fs.writeFile("fail", data, cb);', {
+          allowedMethods: ['fs.readFile'],
         });
 
         expect(result.valid).toBe(false);
-        expect(result.violations[0].pattern).toBe('console.error');
+        expect(result.violations[0].pattern).toBe('fs.writeFile');
       });
     });
   });
@@ -1008,7 +1096,7 @@ describe('validatePurity', () => {
   describe('multiple violations', () => {
     it('should collect all violations', () => {
       const code = `
-        console.log("test");
+        fs.readFile("test.txt", cb);
         for (let i = 0; i < 10; i++) {}
         class Foo {}
       `;
@@ -1020,7 +1108,7 @@ describe('validatePurity', () => {
 
     it('should report different violation types', () => {
       const code = `
-        console.log("test");
+        fs.readFile("test.txt", cb);
         obj.prop = 42;
         class Foo {}
       `;
@@ -1222,11 +1310,11 @@ describe('getNodeLocation', () => {
 
 describe('getMemberExpressionString', () => {
   it('should return string for simple member expression', () => {
-    const ast = parseCode('console.log;');
+    const ast = parseCode('fs.readFile;');
     const node = ast.program.body[0].expression;
     const result = getMemberExpressionString(node);
 
-    expect(result).toBe('console.log');
+    expect(result).toBe('fs.readFile');
   });
 
   it('should return string for nested member expression', () => {
@@ -1263,15 +1351,15 @@ describe('getMemberExpressionString', () => {
 });
 
 describe('matchesForbiddenMemberExpression', () => {
-  const forbiddenPatterns = ['console.log', 'console.error', 'fs.*', 'process.exit'];
+  const forbiddenPatterns = ['process.exit', 'localStorage.*', 'sessionStorage.*'];
 
   it('should match exact pattern', () => {
-    expect(matchesForbiddenMemberExpression('console.log', forbiddenPatterns)).toBe('console.log');
+    expect(matchesForbiddenMemberExpression('process.exit', forbiddenPatterns)).toBe('process.exit');
   });
 
   it('should match wildcard pattern', () => {
-    expect(matchesForbiddenMemberExpression('fs.readFile', forbiddenPatterns)).toBe('fs.*');
-    expect(matchesForbiddenMemberExpression('fs.writeFile', forbiddenPatterns)).toBe('fs.*');
+    expect(matchesForbiddenMemberExpression('localStorage.getItem', forbiddenPatterns)).toBe('localStorage.*');
+    expect(matchesForbiddenMemberExpression('sessionStorage.setItem', forbiddenPatterns)).toBe('sessionStorage.*');
   });
 
   it('should return null for non-matching pattern', () => {
@@ -1279,7 +1367,7 @@ describe('matchesForbiddenMemberExpression', () => {
   });
 
   it('should not match partial prefix without wildcard', () => {
-    expect(matchesForbiddenMemberExpression('console.trace', forbiddenPatterns)).toBeNull();
+    expect(matchesForbiddenMemberExpression('process.env', forbiddenPatterns)).toBeNull();
   });
 });
 

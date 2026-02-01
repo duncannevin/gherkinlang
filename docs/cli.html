@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CLI Reference - GherkinLang</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">🥒</span>
+        GherkinLang
+      </a>
+      <nav>
+        <ul>
+          <li><a href="getting-started.html">Get Started</a></li>
+          <li><a href="language.html">Language</a></li>
+          <li><a href="cli.html" class="active">CLI</a></li>
+          <li><a href="configuration.html">Config</a></li>
+          <li><a href="https://github.com/duncannevin/gherkinlang-js" target="_blank">GitHub</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="content-wrapper">
+        <aside class="sidebar">
+          <h3>Commands</h3>
+          <ul>
+            <li><a href="#init">init</a></li>
+            <li><a href="#compile">compile</a></li>
+            <li><a href="#watch">watch</a></li>
+            <li><a href="#start">start</a></li>
+          </ul>
+          <h3>Options</h3>
+          <ul>
+            <li><a href="#global-options">Global Options</a></li>
+            <li><a href="#environment">Environment</a></li>
+          </ul>
+        </aside>
+
+        <div class="content">
+          <h1>CLI Reference</h1>
+          <p>Complete reference for the GherkinLang command-line interface.</p>
+
+          <h2 id="init">gherkin init</h2>
+          <p>Initialize a new GherkinLang project with configuration and example files.</p>
+          
+          <pre><code>gherkin init [directory] [options]</code></pre>
+
+          <h3>Arguments</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Argument</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>directory</code></td>
+                <td>Target directory (defaults to current directory)</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>Options</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Option</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>-t, --template &lt;name&gt;</code></td>
+                <td>Project template: <code>basic</code>, <code>library</code>, <code>api</code></td>
+              </tr>
+              <tr>
+                <td><code>-y, --yes</code></td>
+                <td>Skip prompts, use defaults</td>
+              </tr>
+              <tr>
+                <td><code>-f, --force</code></td>
+                <td>Overwrite existing files</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>Examples</h3>
+          <pre><code><span class="comment"># Interactive initialization</span>
+gherkin init
+
+<span class="comment"># Create project in new directory</span>
+gherkin init my-project
+
+<span class="comment"># Use API template with defaults</span>
+gherkin init my-api --template api --yes
+
+<span class="comment"># Force overwrite existing project</span>
+gherkin init . --force</code></pre>
+
+          <h2 id="compile">gherkin compile</h2>
+          <p>Compile feature files to JavaScript code.</p>
+
+          <pre><code>gherkin compile &lt;path&gt; [options]</code></pre>
+
+          <h3>Arguments</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Argument</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>path</code></td>
+                <td>File or directory to compile (required)</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>Options</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Option</th>
+                <th>Description</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>-o, --output &lt;dir&gt;</code></td>
+                <td>Output directory</td>
+                <td><code>dist/</code></td>
+              </tr>
+              <tr>
+                <td><code>-f, --format &lt;format&gt;</code></td>
+                <td>Module format: <code>commonjs</code>, <code>esm</code></td>
+                <td><code>commonjs</code></td>
+              </tr>
+              <tr>
+                <td><code>-t, --target &lt;lang&gt;</code></td>
+                <td>Target language: <code>javascript</code>, <code>elixir</code></td>
+                <td><code>javascript</code></td>
+              </tr>
+              <tr>
+                <td><code>--no-cache</code></td>
+                <td>Bypass compilation cache</td>
+                <td>-</td>
+              </tr>
+              <tr>
+                <td><code>--no-tests</code></td>
+                <td>Skip test generation</td>
+                <td>-</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>Examples</h3>
+          <pre><code><span class="comment"># Compile a single file</span>
+gherkin compile features/calculator.feature
+
+<span class="comment"># Compile entire directory</span>
+gherkin compile features/
+
+<span class="comment"># Custom output with ESM format</span>
+gherkin compile features/ --output lib/ --format esm
+
+<span class="comment"># Skip cache for fresh compile</span>
+gherkin compile features/ --no-cache
+
+<span class="comment"># Compile without generating tests</span>
+gherkin compile features/ --no-tests</code></pre>
+
+          <h2 id="watch">gherkin watch</h2>
+          <p>Watch for file changes and automatically recompile.</p>
+
+          <pre><code>gherkin watch &lt;path&gt; [options]</code></pre>
+
+          <h3>Arguments</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Argument</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>path</code></td>
+                <td>Directory to watch (required)</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>Options</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Option</th>
+                <th>Description</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>-o, --output &lt;dir&gt;</code></td>
+                <td>Output directory</td>
+                <td><code>dist/</code></td>
+              </tr>
+              <tr>
+                <td><code>--debounce &lt;ms&gt;</code></td>
+                <td>Debounce delay in milliseconds</td>
+                <td><code>100</code></td>
+              </tr>
+              <tr>
+                <td><code>--initial</code></td>
+                <td>Compile all files before watching</td>
+                <td>-</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>Examples</h3>
+          <pre><code><span class="comment"># Watch features directory</span>
+gherkin watch features/
+
+<span class="comment"># Watch with initial compile</span>
+gherkin watch features/ --initial
+
+<span class="comment"># Custom debounce for slower systems</span>
+gherkin watch features/ --debounce 500</code></pre>
+
+          <div class="alert alert-info">
+            <strong>Tip:</strong> Press <code>Ctrl+C</code> to stop watching and see a summary of compiled files.
+          </div>
+
+          <h2 id="start">gherkin start</h2>
+          <p>Convenience command that compiles and watches the features directory.</p>
+
+          <pre><code>gherkin start [options]</code></pre>
+
+          <h3>Options</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Option</th>
+                <th>Description</th>
+                <th>Default</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>-d, --dir &lt;dir&gt;</code></td>
+                <td>Directory to watch</td>
+                <td><code>features/</code></td>
+              </tr>
+              <tr>
+                <td><code>-o, --output &lt;dir&gt;</code></td>
+                <td>Output directory</td>
+                <td><code>dist/</code></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>Examples</h3>
+          <pre><code><span class="comment"># Start with defaults (features/ -> dist/)</span>
+gherkin start
+
+<span class="comment"># Watch custom directory</span>
+gherkin start --dir src/specs --output lib/</code></pre>
+
+          <h2 id="global-options">Global Options</h2>
+          <p>These options are available for all commands:</p>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Option</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>-c, --config &lt;path&gt;</code></td>
+                <td>Path to config file</td>
+              </tr>
+              <tr>
+                <td><code>-v, --verbose</code></td>
+                <td>Enable verbose output</td>
+              </tr>
+              <tr>
+                <td><code>--no-color</code></td>
+                <td>Disable colored output</td>
+              </tr>
+              <tr>
+                <td><code>-h, --help</code></td>
+                <td>Show help for command</td>
+              </tr>
+              <tr>
+                <td><code>-V, --version</code></td>
+                <td>Show version number</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h2 id="environment">Environment Variables</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>Variable</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>ANTHROPIC_API_KEY</code></td>
+                <td>API key for Claude AI (required for compilation)</td>
+              </tr>
+              <tr>
+                <td><code>GHERKIN_CONFIG</code></td>
+                <td>Path to config file (alternative to --config)</td>
+              </tr>
+              <tr>
+                <td><code>NO_COLOR</code></td>
+                <td>Disable colored output when set</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2024 GherkinLang. MIT License.</p>
+      <p><a href="https://github.com/duncannevin/gherkinlang-js">GitHub</a></p>
+    </div>
+  </footer>
+</body>
+</html>

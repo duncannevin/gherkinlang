@@ -346,6 +346,90 @@ When filter users where email_verified is true
 
 ---
 
+## State Management
+
+GherkinLang supports stateful services through a message-passing pattern. State is managed through pure reducer functions, keeping the core logic pure while allowing controlled state transitions.
+
+### State Declaration
+
+Use `Background: State` to declare a stateful service:
+
+```gherkin
+Background: State
+  Given initial state is { count: 0 }
+  And state accepts messages:
+    | increment | count + 1        |
+    | decrement | count - 1        |
+    | reset     | 0                |
+```
+
+**Components:**
+- `initial state is <object>` - Defines the initial state shape
+- `state accepts messages:` - Table of message types and their state transformations
+- Each row: `| message_type | transformation |`
+
+### Message Handlers as Scenarios
+
+Define message handlers using scenarios:
+
+```gherkin
+Scenario: increment defines a message handler
+  Given state contains count
+  When receive increment message
+  Then return new state with count + 1
+
+Scenario: decrement defines a message handler
+  Given state contains count
+  When receive decrement message
+  Then return new state with count - 1
+```
+
+### State Queries
+
+Query current state without modifying it:
+
+```gherkin
+Scenario: get_count queries state
+  When send get message to Counter
+  Then return current count
+```
+
+### Complete State Example
+
+```gherkin
+Feature: Counter Service
+
+Background: State
+  Given initial state is { count: 0 }
+  And state accepts messages:
+    | increment | count + 1        |
+    | decrement | count - 1        |
+    | get       | return count     |
+
+Scenario: increment defines a message handler
+  Given state contains count
+  When receive increment message
+  Then return new state with count + 1
+
+Scenario: decrement defines a message handler
+  Given state contains count
+  When receive decrement message
+  Then return new state with count - 1
+
+Scenario: get_count queries state
+  When send get message to Counter
+  Then return current count
+```
+
+### State Management Principles
+
+1. **Pure Reducers**: The state transition logic (reducer) must be a pure function
+2. **Immutable Updates**: State is never mutated; new state objects are returned
+3. **Message-Based**: All state changes happen through explicit messages
+4. **Encapsulation**: State is private; access only through defined messages
+
+---
+
 ## Language Principles
 
 ### Purity Requirements
@@ -353,6 +437,8 @@ All GherkinLang functions must be pure:
 - No side effects (I/O, mutations, global state)
 - Same inputs always produce same outputs
 - No reliance on external state or time
+
+**Exception:** State management services encapsulate controlled state changes through pure reducer functions.
 
 ### Immutability
 - All data is immutable

@@ -98,11 +98,15 @@ export default UserManagement;
 ```gherkin
 Background:
   Given import lodash as _
+  And import DatabaseService as db
+  And import UsersService as usersService
   And constant MAX_USERS = 100
   And constant DEFAULT_ROLE = "user"
 ```
 ```javascript
-import _ from 'lodash';
+const _ = require('lodash');
+const db = require('./database-service');
+const usersService = require('./users-service');
 
 const MAX_USERS = 100;
 const DEFAULT_ROLE = "user";
@@ -199,6 +203,25 @@ When let doubled = value * 2
 ```javascript
 const total = sum(prices);
 const doubled = value * 2;
+```
+
+---
+
+### Importing dependencies
+
+```gherkin
+  Background
+    Given import express as express
+    And import DatabaseService as db
+    And import UsersService as usersService
+    And import lodash as _
+```
+
+```javascript
+const express = require('express');
+const db = require('database-service');
+const usersService = require('users-service');
+const _ = require('lodash');
 ```
 
 ---
@@ -516,124 +539,14 @@ new MyClass()
 
 ---
 
-## Date/Time Operations with date-fns
+## Date/Time Operations
 
-**IMPORTANT:** Never use the native `Date` object directly. Always use the `date-fns` library for all date/time operations to maintain purity.
+### Using Date
 
-### Why date-fns?
-
-The native `Date` object is impure:
-- `new Date()` depends on the current system time (non-deterministic)
-- `Date.now()` is non-deterministic
-- Date objects are mutable
-
-The `date-fns` library provides pure, immutable date operations that take dates as parameters.
-
-### Required Pattern
-
-Always pass timestamps/dates as function parameters instead of creating them inside functions:
-
-```javascript
-// ❌ FORBIDDEN - impure, non-deterministic
-const getTimestamp = () => new Date();
-const isExpired = (token) => new Date() > token.expiresAt;
-
-// ✅ CORRECT - pure, receives current time as parameter
-import { isAfter, formatISO, addHours, differenceInSeconds } from 'date-fns';
-
-const isExpired = (token, currentTime) => isAfter(currentTime, token.expiresAt);
-const createToken = (userId, currentTime, expirationHours = 24) => ({
-  userId,
-  createdAt: formatISO(currentTime),
-  expiresAt: formatISO(addHours(currentTime, expirationHours))
-});
-```
-
-### Common date-fns Functions
-
-```javascript
-import {
-  // Formatting
-  formatISO,           // Format as ISO string
-  format,              // Custom format
-  
-  // Comparison
-  isAfter,             // Check if date is after another
-  isBefore,            // Check if date is before another
-  isEqual,             // Check if dates are equal
-  
-  // Arithmetic
-  addHours,            // Add hours to date
-  addMinutes,          // Add minutes to date
-  addDays,             // Add days to date
-  subHours,            // Subtract hours
-  
-  // Difference
-  differenceInSeconds, // Get difference in seconds
-  differenceInMinutes, // Get difference in minutes
-  differenceInHours,   // Get difference in hours
-  differenceInDays,    // Get difference in days
-  
-  // Parsing
-  parseISO,            // Parse ISO string to Date
-} from 'date-fns';
-```
-
-### Example: Timestamps in Records
-
-```gherkin
-Scenario: Create a record with timestamp
-  Given record data and current timestamp
-  When I create the record
-  Then the record includes createdAt formatted timestamp
-```
-
-```javascript
-import { formatISO } from 'date-fns';
-
-const createRecord = (data, currentTime) => ({
-  ...data,
-  id: generateId(),
-  createdAt: formatISO(currentTime)
-});
-```
-
-### Example: Token Expiration
-
-```gherkin
-Scenario: Generate auth token
-  Given user id, current timestamp, and expiration hours
-  When I generate the token
-  Then the token includes expiration timestamp
-```
-
-```javascript
-import { addHours, formatISO, isAfter } from 'date-fns';
-
-const generateToken = (userId, currentTime, expirationHours = 24) => ({
-  userId,
-  expiresAt: formatISO(addHours(currentTime, expirationHours))
-});
-
-const isTokenValid = (token, currentTime) => 
-  !isAfter(currentTime, new Date(token.expiresAt));
-```
-
-### Example: Uptime Calculation
-
-```gherkin
-Scenario: Calculate uptime
-  Given start timestamp and current timestamp
-  When I calculate uptime
-  Then uptime in seconds is returned
-```
-
-```javascript
-import { differenceInSeconds } from 'date-fns';
-
-const calculateUptime = (startTime, currentTime) => 
-  differenceInSeconds(currentTime, startTime);
-```
+The native `Date` object is allowed. You can use:
+- `new Date()` - Get current time
+- `Date.now()` - Get current timestamp as number
+- `new Date(isoString)` - Parse ISO string
 
 ---
 
@@ -800,4 +713,269 @@ export default {
   calculate_order_total,
   get_discounted_items
 };
+```
+
+---
+
+## State Management
+
+When a Feature uses `Background: State`, generate a stateful service class with a pure reducer pattern.
+
+### State Service Pattern
+
+**Input (GherkinLang):**
+```gherkin
+Feature: Counter Service
+
+Background: State
+  Given initial state is { count: 0 }
+  And state accepts messages:
+    | increment | count + 1        |
+    | decrement | count - 1        |
+    | get       | return count     |
+
+Scenario: increment defines a message handler
+  Given state contains count
+  When receive increment message
+  Then return new state with count + 1
+
+Scenario: decrement defines a message handler
+  Given state contains count
+  When receive decrement message
+  Then return new state with count - 1
+
+Scenario: get_count queries state
+  When send get message to Counter
+  Then return current count
+```
+
+**Output (JavaScript):**
+```javascript
+/**
+ * @module CounterService
+ * Stateful service with message-based state management.
+ */
+
+/**
+ * Counter state service with pure reducer pattern.
+ */
+class CounterService {
+  /**
+   * Create a new CounterService instance.
+   */
+  constructor() {
+    this.state = { count: 0 };
+  }
+
+  /**
+   * Pure reducer function - transforms state based on message.
+   * @param {Object} state - Current state
+   * @param {{type: string, payload?: any}} message - Message to process
+   * @returns {Object} New state
+   */
+  reduce(state, message) {
+    switch (message.type) {
+      case 'increment':
+        return { ...state, count: state.count + 1 };
+      case 'decrement':
+        return { ...state, count: state.count - 1 };
+      default:
+        return state;
+    }
+  }
+
+  /**
+   * Send a message to update state.
+   * @param {{type: string, payload?: any}} message - Message to send
+   * @returns {Object} New state after reduction
+   */
+  send(message) {
+    this.state = this.reduce(this.state, message);
+    return this.state;
+  }
+
+  /**
+   * Get current state (read-only).
+   * @returns {Object} Current state
+   */
+  get() {
+    return this.state;
+  }
+
+  /**
+   * Increment the counter.
+   * @returns {Object} New state
+   */
+  increment() {
+    return this.send({ type: 'increment' });
+  }
+
+  /**
+   * Decrement the counter.
+   * @returns {Object} New state
+   */
+  decrement() {
+    return this.send({ type: 'decrement' });
+  }
+
+  /**
+   * Get the current count.
+   * @returns {number} Current count value
+   */
+  getCount() {
+    return this.state.count;
+  }
+}
+
+export default CounterService;
+```
+
+### State Service Rules
+
+1. **Class-based**: Use ES6 class for encapsulation
+2. **Pure Reducer**: The `reduce()` method must be a pure function
+3. **Immutable Updates**: Always spread state and return new objects
+4. **Message Objects**: Messages have `{ type: string, payload?: any }` shape
+5. **Convenience Methods**: Generate named methods for each message type
+6. **JSDoc**: Document all public methods
+
+### Complex State Example
+
+**Input (GherkinLang):**
+```gherkin
+Feature: Todo Service
+
+Background: State
+  Given initial state is { todos: [], nextId: 1 }
+  And state accepts messages:
+    | add    | add todo with id and text      |
+    | toggle | toggle todo completed status   |
+    | remove | remove todo by id              |
+    | clear  | remove all completed todos     |
+```
+
+**Output (JavaScript):**
+```javascript
+/**
+ * @module TodoService
+ */
+
+class TodoService {
+  constructor() {
+    this.state = { todos: [], nextId: 1 };
+  }
+
+  reduce(state, message) {
+    switch (message.type) {
+      case 'add':
+        return {
+          ...state,
+          todos: [...state.todos, { 
+            id: state.nextId, 
+            text: message.payload.text, 
+            completed: false 
+          }],
+          nextId: state.nextId + 1
+        };
+      
+      case 'toggle':
+        return {
+          ...state,
+          todos: state.todos.map(todo =>
+            todo.id === message.payload.id
+              ? { ...todo, completed: !todo.completed }
+              : todo
+          )
+        };
+      
+      case 'remove':
+        return {
+          ...state,
+          todos: state.todos.filter(todo => todo.id !== message.payload.id)
+        };
+      
+      case 'clear':
+        return {
+          ...state,
+          todos: state.todos.filter(todo => !todo.completed)
+        };
+      
+      default:
+        return state;
+    }
+  }
+
+  send(message) {
+    this.state = this.reduce(this.state, message);
+    return this.state;
+  }
+
+  get() {
+    return this.state;
+  }
+
+  add(text) {
+    return this.send({ type: 'add', payload: { text } });
+  }
+
+  toggle(id) {
+    return this.send({ type: 'toggle', payload: { id } });
+  }
+
+  remove(id) {
+    return this.send({ type: 'remove', payload: { id } });
+  }
+
+  clearCompleted() {
+    return this.send({ type: 'clear' });
+  }
+
+  getTodos() {
+    return this.state.todos;
+  }
+}
+
+export default TodoService;
+```
+
+### State with External Dependencies
+
+When state services need date/time operations, always pass timestamps as parameters (never use `Date` internally):
+
+```javascript
+class SessionService {
+  constructor() {
+    this.state = { sessions: [] };
+  }
+
+  reduce(state, message) {
+    switch (message.type) {
+      case 'create':
+        return {
+          ...state,
+          sessions: [...state.sessions, {
+            id: message.payload.id,
+            createdAt: message.payload.timestamp,
+            // Use date-fns for expiration calculation
+            expiresAt: addHours(message.payload.timestamp, 24)
+          }]
+        };
+      default:
+        return state;
+    }
+  }
+
+  send(message) {
+    this.state = this.reduce(this.state, message);
+    return this.state;
+  }
+
+  // Timestamp is ALWAYS passed as a parameter - never use Date internally
+  createSession(id, currentTimestamp) {
+    return this.send({ 
+      type: 'create', 
+      payload: { id, timestamp: currentTimestamp } 
+    });
+  }
+}
 ```

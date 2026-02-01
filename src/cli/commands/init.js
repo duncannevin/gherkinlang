@@ -123,51 +123,67 @@ export const TEMPLATES = {
     files: [
       {
         path: 'features/database.feature',
-        content: `Feature: Database
-  Import: date-fns (external)
-
-  In-memory database for storing application data.
+        content: `Feature: DatabaseService
+  In-memory database service for storing application data.
+  Uses state management for persistent storage across operations.
   Provides CRUD operations with automatic ID generation and timestamps.
 
-  Scenario: Create a new record
-    Given a collection name, record data, and current timestamp
-    When I insert the record into the collection
-    Then the record is stored with a unique auto-generated id
-    And the record includes createdAt timestamp
-    And the complete record with id and timestamps is returned
+Background:
+  Given import date-fns as dateFns
+  And initial state is { collections: {}, nextId: 1 }
+  And state accepts messages:
+    | insert    | add record to collection with auto id       |
+    | findById  | return record by id from collection         |
+    | findAll   | return all records from collection          |
+    | findWhere | return records matching filter criteria     |
+    | update    | update record by id in collection           |
+    | delete    | remove record by id from collection         |
+    | clear     | remove all records from collection          |
 
-  Scenario: Find record by id
-    Given a collection name and a record id
-    When I query the collection for that id
-    Then the matching record is returned or null if not found
+Scenario: insert defines a message handler
+  Given state contains collections and nextId
+  When receive insert message with collection, data, and timestamp
+  Then create record with id from nextId and createdAt from timestamp
+  And add record to the collection array
+  And increment nextId
+  And return new state with the created record
 
-  Scenario: Find all records in collection
-    Given a collection name
-    When I query for all records
-    Then an array of all records in the collection is returned
+Scenario: findById defines a message handler
+  Given state contains collections
+  When receive findById message with collection and id
+  Then search the collection for record with matching id
+  And return the record or null if not found
 
-  Scenario: Find records matching criteria
-    Given a collection name and a filter object
-    When I query with the filter
-    Then an array of records matching all filter criteria is returned
+Scenario: findAll defines a message handler
+  Given state contains collections
+  When receive findAll message with collection name
+  Then return array of all records in that collection
+  And return empty array if collection does not exist
 
-  Scenario: Update a record
-    Given a collection name, record id, update data, and current timestamp
-    When I update the record
-    Then the record is modified with the new data
-    And the record includes updatedAt timestamp
-    And the updated record is returned or null if not found
+Scenario: findWhere defines a message handler
+  Given state contains collections
+  When receive findWhere message with collection and filter
+  Then filter records where all filter properties match
+  And return array of matching records
 
-  Scenario: Delete a record
-    Given a collection name and a record id
-    When I delete the record
-    Then the record is removed from the collection
-    And true is returned if deleted, false if not found
+Scenario: update defines a message handler
+  Given state contains collections
+  When receive update message with collection, id, data, and timestamp
+  Then find record by id in collection
+  And merge data into record with updatedAt timestamp
+  And return new state with updated record or null if not found
 
-  Scenario: Clear a collection
-    Given a collection name
-    When I clear the collection
-    Then all records in that collection are removed
+Scenario: delete defines a message handler
+  Given state contains collections
+  When receive delete message with collection and id
+  Then remove record with matching id from collection
+  And return new state with true if deleted, false if not found
+
+Scenario: clear defines a message handler
+  Given state contains collections
+  When receive clear message with collection name
+  Then remove all records from that collection
+  And return new state with empty collection
 `,
       },
       {
@@ -211,162 +227,178 @@ export const TEMPLATES = {
       },
       {
         path: 'features/users.feature',
-        content: `Feature: Users
-  Import: Database
-  Import: Validation
+        content: `Feature: UsersService
+  User management service for the API.
+  Handles CRUD operations for user records using Database Service.
 
-  User management operations for the API.
-  Handles CRUD operations for user records.
+Background:
+  Given import DatabaseService as db
+  And import Validation as validation
+  And import date-fns as dateFns
 
-  Scenario: Create a new user
-    Given user data with name and email
-    When I validate the user input
-    And the validation passes
-    And I create the user in the database
-    Then the new user record with id is returned
+Scenario: createUser defines a function
+  Given function createUser accepts db, userData, and currentTimestamp
+  When I validate the user input with Validation
+  And the validation fails
+  Then return error result with validation messages
+  Otherwise
+  When send insert message to db with collection "users", userData, and currentTimestamp
+  Then return the created user record
 
-  Scenario: Create user with validation error
-    Given invalid user data
-    When I validate the user input
-    And the validation fails
-    Then an error result with validation messages is returned
+Scenario: getUserById defines a function
+  Given function getUserById accepts db and userId
+  When send findById message to db with collection "users" and userId
+  Then return the user record or null
 
-  Scenario: Get user by id
-    Given a user id
-    When I fetch the user from the database
-    Then the user data is returned or null if not found
+Scenario: getAllUsers defines a function
+  Given function getAllUsers accepts db
+  When send findAll message to db with collection "users"
+  Then return array of all user records
 
-  Scenario: Get all users
-    When I fetch all users from the database
-    Then an array of all user records is returned
+Scenario: updateUser defines a function
+  Given function updateUser accepts db, userId, updateData, and currentTimestamp
+  When I validate the update data with Validation
+  And the validation fails
+  Then return error result with validation messages
+  Otherwise
+  When send update message to db with collection "users", userId, updateData, and currentTimestamp
+  Then return the updated user record or null
 
-  Scenario: Update user
-    Given a user id and update data
-    When I validate the update data
-    And the validation passes
-    And I update the user in the database
-    Then the updated user record is returned or null if not found
+Scenario: deleteUser defines a function
+  Given function deleteUser accepts db and userId
+  When send delete message to db with collection "users" and userId
+  Then return true if deleted, false otherwise
 
-  Scenario: Delete user
-    Given a user id
-    When I delete the user from the database
-    Then true is returned if deleted, false if not found
-
-  Scenario: Find users by email
-    Given an email address
-    When I search for users with that email
-    Then an array of matching users is returned
+Scenario: findUsersByEmail defines a function
+  Given function findUsersByEmail accepts db and email
+  When send findWhere message to db with collection "users" and filter { email }
+  Then return array of matching users
 `,
       },
       {
         path: 'features/products.feature',
-        content: `Feature: Products
-  Import: Database
-  Import: Validation
+        content: `Feature: ProductsService
+  Product catalog service for the API.
+  Handles CRUD operations for product records using Database Service.
 
-  Product catalog management for the API.
-  Handles CRUD operations for product records.
+Background:
+  Given import DatabaseService as db
+  And import Validation as validation
+  And import date-fns as dateFns
 
-  Scenario: Create a new product
-    Given product data with name, price, and description
-    When I validate the product input
-    And the validation passes
-    And I create the product in the database
-    Then the new product record with id is returned
+Scenario: createProduct defines a function
+  Given function createProduct accepts db, productData, and currentTimestamp
+  When I validate the product input with Validation
+  And the validation fails
+  Then return error result with validation messages
+  Otherwise
+  When send insert message to db with collection "products", productData, and currentTimestamp
+  Then return the created product record
 
-  Scenario: Create product with validation error
-    Given invalid product data
-    When I validate the product input
-    And the validation fails
-    Then an error result with validation messages is returned
+Scenario: getProductById defines a function
+  Given function getProductById accepts db and productId
+  When send findById message to db with collection "products" and productId
+  Then return the product record or null
 
-  Scenario: Get product by id
-    Given a product id
-    When I fetch the product from the database
-    Then the product data is returned or null if not found
+Scenario: getAllProducts defines a function
+  Given function getAllProducts accepts db
+  When send findAll message to db with collection "products"
+  Then return array of all product records
 
-  Scenario: Get all products
-    When I fetch all products from the database
-    Then an array of all product records is returned
+Scenario: updateProduct defines a function
+  Given function updateProduct accepts db, productId, updateData, and currentTimestamp
+  When I validate the update data with Validation
+  And the validation fails
+  Then return error result with validation messages
+  Otherwise
+  When send update message to db with collection "products", productId, updateData, and currentTimestamp
+  Then return the updated product record or null
 
-  Scenario: Update product
-    Given a product id and update data
-    When I validate the update data
-    And the validation passes
-    And I update the product in the database
-    Then the updated product record is returned or null if not found
+Scenario: deleteProduct defines a function
+  Given function deleteProduct accepts db and productId
+  When send delete message to db with collection "products" and productId
+  Then return true if deleted, false otherwise
 
-  Scenario: Delete product
-    Given a product id
-    When I delete the product from the database
-    Then true is returned if deleted, false if not found
+Scenario: findProductsByPriceRange defines a function
+  Given function findProductsByPriceRange accepts db, minPrice, and maxPrice
+  When send findAll message to db with collection "products"
+  And filter results where price >= minPrice and price <= maxPrice
+  Then return array of matching products
 
-  Scenario: Find products by price range
-    Given a minimum price and maximum price
-    When I search for products in that price range
-    Then an array of matching products is returned
-
-  Scenario: Find products by name search
-    Given a search term
-    When I search for products with names containing the term
-    Then an array of matching products is returned
+Scenario: searchProductsByName defines a function
+  Given function searchProductsByName accepts db and searchTerm
+  When send findAll message to db with collection "products"
+  And filter results where name contains searchTerm (case insensitive)
+  Then return array of matching products
 `,
       },
       {
         path: 'features/auth.feature',
-        content: `Feature: Auth
-  Import: Database
-  Import: Users
-  Import: date-fns (external)
+        content: `Feature: AuthService
+  Authentication service for the API.
+  Handles password hashing, token generation, and user authentication.
+  Uses Database Service for persisting user credentials.
 
-  Authentication utilities for the API.
-  Handles password hashing, token generation, and verification.
+Background:
+  Given import DatabaseService as db
+  And import UsersService as users
+  And import Validation as validation
+  And import date-fns as dateFns
 
-  Scenario: Hash a password
-    Given a plain text password
-    When I hash the password
-    Then a hashed password string is returned
-    And the hash is different from the original password
+Scenario: hashPassword defines a function
+  Given function hashPassword accepts password
+  When I create a hash using a secure hashing algorithm
+  Then return the hashed password string
 
-  Scenario: Verify password
-    Given a plain text password and a hashed password
-    When I verify the password against the hash
-    Then true is returned if they match, false otherwise
+Scenario: verifyPassword defines a function
+  Given function verifyPassword accepts password and hashedPassword
+  When I compare password against the hash
+  Then return true if they match, false otherwise
 
-  Scenario: Generate auth token
-    Given a user id, current timestamp, and optional expiration hours
-    When I generate an auth token with expiration
-    Then a token string is returned containing the user id and expiration
+Scenario: generateToken defines a function
+  Given function generateToken accepts userId, currentTimestamp, and expirationHours
+  When I create a token payload with userId and expiration
+  And expiration is calculated by adding expirationHours to currentTimestamp
+  Then return the encoded token string
 
-  Scenario: Verify auth token
-    Given an auth token and current timestamp
-    When I verify the token checking expiration
-    Then the decoded payload with user id is returned if valid
-    And null is returned if the token is invalid or expired
+Scenario: verifyToken defines a function
+  Given function verifyToken accepts token and currentTimestamp
+  When I decode and validate the token
+  And check if currentTimestamp is before expiration
+  Then return decoded payload with userId if valid, null if expired or invalid
 
-  Scenario: Register new user
-    Given registration data with name, email, and password
-    When I validate the registration data
-    And the validation passes
-    And no user exists with that email
-    And I hash the password
-    And I create the user with hashed password
-    Then the new user record without password is returned
-    And an auth token is generated for the user
+Scenario: register defines a function
+  Given function register accepts db, registrationData, and currentTimestamp
+  When I validate registration data (name, email, password required)
+  And validation fails
+  Then return error result with validation messages
+  Otherwise
+  When send findWhere message to db with collection "users" and filter { email }
+  And a user already exists with that email
+  Then return error result with "Email already registered"
+  Otherwise
+  When I hash the password
+  And send insert message to db with collection "users" and user data (without plain password)
+  And generate auth token for the new user
+  Then return success with user record (without password) and token
 
-  Scenario: Login user
-    Given login credentials with email and password
-    When I find the user by email
-    And the user exists
-    And I verify the password
-    Then the user record without password is returned
-    And an auth token is generated for the user
+Scenario: login defines a function
+  Given function login accepts db, credentials, and currentTimestamp
+  When send findWhere message to db with collection "users" and filter { email }
+  And no user found with that email
+  Then return error result with "Invalid credentials"
+  Otherwise
+  When I verify the password against stored hash
+  And password does not match
+  Then return error result with "Invalid credentials"
+  Otherwise
+  When I generate auth token for the user
+  Then return success with user record (without password) and token
 
-  Scenario: Login with invalid credentials
-    Given login credentials with email and password
-    When I find the user by email
-    And the user does not exist or password is invalid
-    Then an authentication error is returned
+Scenario: removePassword defines a function
+  Given function removePassword accepts user object
+  When I create a copy of user without password field
+  Then return the sanitized user object
 `,
       },
       {
@@ -421,12 +453,13 @@ export const TEMPLATES = {
       {
         path: 'features/health.feature',
         content: `Feature: Health
-  Import: date-fns (external)
-
   Health check endpoint for API monitoring.
   Provides system status and uptime information.
 
-  Scenario: Get health status
+Background:
+  Given import date-fns as dateFns
+
+Scenario: Get health status
     Given the application start timestamp and current timestamp
     When I check the health status
     Then the status is "healthy"
@@ -441,6 +474,109 @@ export const TEMPLATES = {
     And the response includes memory usage information
     And the response includes uptime in seconds
     And the response includes the formatted timestamp
+`,
+      },
+      {
+        path: 'features/app.feature',
+        content: `Feature: App
+  Express.js application that composes all services into a REST API.
+  Provides HTTP endpoints for users, products, authentication, and health.
+
+Background:
+  Given import express as express
+  And import DatabaseService as db
+  And import UsersService as usersService
+  And import ProductsService as productsService
+  And import AuthService as authService
+  And import Responses as responses
+  And import Health as health
+  And import date-fns as dateFns
+
+Scenario: createApp defines a function
+  Given function createApp accepts config
+  When I create an express application
+  And add JSON body parser middleware
+  And add request logging middleware
+  And register all route handlers
+  Then return the configured express app
+
+Scenario: registerRoutes defines a function
+  Given function registerRoutes accepts app and services
+  When I register health routes at /health
+  And register auth routes at /auth
+  And register user routes at /users
+  And register product routes at /products
+  Then all routes are configured with proper handlers
+
+Scenario: healthRoutes defines route handlers
+  Given GET /health endpoint
+  When request is received with currentTimestamp
+  Then respond with health status from Health service
+
+Scenario: authRoutes defines route handlers
+  Given POST /auth/register endpoint
+  When request body contains name, email, password
+  And currentTimestamp is provided
+  Then call authService.register and respond with result
+
+  Given POST /auth/login endpoint
+  When request body contains email, password
+  And currentTimestamp is provided
+  Then call authService.login and respond with result
+
+Scenario: userRoutes defines route handlers
+  Given GET /users endpoint
+  When request is received
+  Then call usersService.getAllUsers and respond with users array
+
+  Given GET /users/:id endpoint
+  When request contains user id parameter
+  Then call usersService.getUserById and respond with user or not found
+
+  Given POST /users endpoint
+  When request body contains user data and currentTimestamp
+  Then call usersService.createUser and respond with created user
+
+  Given PUT /users/:id endpoint
+  When request contains id and update data with currentTimestamp
+  Then call usersService.updateUser and respond with updated user or not found
+
+  Given DELETE /users/:id endpoint
+  When request contains user id
+  Then call usersService.deleteUser and respond with success or not found
+
+Scenario: productRoutes defines route handlers
+  Given GET /products endpoint
+  When request is received
+  Then call productsService.getAllProducts and respond with products array
+
+  Given GET /products/:id endpoint
+  When request contains product id parameter
+  Then call productsService.getProductById and respond with product or not found
+
+  Given POST /products endpoint
+  When request body contains product data and currentTimestamp
+  Then call productsService.createProduct and respond with created product
+
+  Given PUT /products/:id endpoint
+  When request contains id and update data with currentTimestamp
+  Then call productsService.updateProduct and respond with updated product or not found
+
+  Given DELETE /products/:id endpoint
+  When request contains product id
+  Then call productsService.deleteProduct and respond with success or not found
+
+Scenario: errorHandler defines middleware
+  Given an error occurs in any route
+  When the error handler middleware is invoked
+  Then log the error
+  And respond with appropriate error response from Responses service
+
+Scenario: startServer defines a function
+  Given function startServer accepts app, port, and startTimestamp
+  When I start the express server on the specified port
+  Then log server started message with port
+  And return the server instance
 `,
       },
     ],

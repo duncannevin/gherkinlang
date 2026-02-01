@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Getting Started - GherkinLang</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header>
+    <div class="container">
+      <a href="index.html" class="logo">
+        <span class="logo-icon">🥒</span>
+        GherkinLang
+      </a>
+      <nav>
+        <ul>
+          <li><a href="getting-started.html" class="active">Get Started</a></li>
+          <li><a href="language.html">Language</a></li>
+          <li><a href="cli.html">CLI</a></li>
+          <li><a href="configuration.html">Config</a></li>
+          <li><a href="https://github.com/duncannevin/gherkinlang-js" target="_blank">GitHub</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="content-wrapper">
+        <aside class="sidebar">
+          <h3>On This Page</h3>
+          <ul>
+            <li><a href="#installation">Installation</a></li>
+            <li><a href="#quick-start">Quick Start</a></li>
+            <li><a href="#project-init">Project Initialization</a></li>
+            <li><a href="#first-feature">Your First Feature</a></li>
+            <li><a href="#compiling">Compiling</a></li>
+            <li><a href="#watch-mode">Watch Mode</a></li>
+            <li><a href="#next-steps">Next Steps</a></li>
+          </ul>
+        </aside>
+
+        <div class="content">
+          <h1>Getting Started</h1>
+          <p>Get up and running with GherkinLang in just a few minutes.</p>
+
+          <h2 id="installation">Installation</h2>
+          <p>Install GherkinLang globally using npm:</p>
+          <pre><code>npm install -g gherkinlang-js</code></pre>
+          
+          <p>Or add it as a project dependency:</p>
+          <pre><code>npm install --save-dev gherkinlang-js</code></pre>
+
+          <h3>Requirements</h3>
+          <ul>
+            <li>Node.js 18 or higher</li>
+            <li>Anthropic API key (for AI transformation)</li>
+          </ul>
+
+          <h3>API Key Setup</h3>
+          <p>Set your Anthropic API key as an environment variable:</p>
+          <pre><code>export ANTHROPIC_API_KEY="your-api-key-here"</code></pre>
+
+          <h2 id="quick-start">Quick Start</h2>
+          <p>The fastest way to get started is with the <code>start</code> command:</p>
+          <pre><code><span class="comment"># Create a new project</span>
+gherkin init my-project --template basic
+
+<span class="comment"># Enter the directory</span>
+cd my-project
+
+<span class="comment"># Compile and watch</span>
+gherkin start</code></pre>
+
+          <h2 id="project-init">Project Initialization</h2>
+          <p>Create a new GherkinLang project with the <code>init</code> command:</p>
+          <pre><code>gherkin init [directory] [options]</code></pre>
+
+          <h3>Available Templates</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Template</th>
+                <th>Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><code>basic</code></td>
+                <td>Minimal setup with one example feature</td>
+              </tr>
+              <tr>
+                <td><code>library</code></td>
+                <td>Utility functions with math and string examples</td>
+              </tr>
+              <tr>
+                <td><code>api</code></td>
+                <td>Full Express.js CRUD API with users, products, auth</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <p>Use the <code>--template</code> option to select a template:</p>
+          <pre><code>gherkin init my-api --template api</code></pre>
+
+          <h2 id="first-feature">Your First Feature</h2>
+          <p>Create a new feature file in <code>features/</code>:</p>
+          <pre><code><span class="comment"># features/greeting.feature</span>
+
+<span class="keyword">Feature:</span> Greeting
+  Generate personalized greeting messages.
+
+<span class="keyword">Scenario:</span> Say hello
+  <span class="keyword">Given</span> a person's name
+  <span class="keyword">When</span> I create a greeting
+  <span class="keyword">Then</span> the result is "Hello, {name}!"
+
+<span class="keyword">Scenario:</span> Say goodbye
+  <span class="keyword">Given</span> a person's name
+  <span class="keyword">When</span> I create a farewell
+  <span class="keyword">Then</span> the result is "Goodbye, {name}!"</code></pre>
+
+          <h2 id="compiling">Compiling</h2>
+          <p>Compile your feature files to JavaScript:</p>
+          <pre><code><span class="comment"># Compile a single file</span>
+gherkin compile features/greeting.feature
+
+<span class="comment"># Compile all features in a directory</span>
+gherkin compile features/
+
+<span class="comment"># Specify output directory</span>
+gherkin compile features/ --output dist/</code></pre>
+
+          <p>The compiler will generate:</p>
+          <ul>
+            <li><code>dist/greeting.js</code> - The compiled JavaScript module</li>
+            <li><code>test/generated/greeting.test.js</code> - Jest test file (if enabled)</li>
+          </ul>
+
+          <h2 id="watch-mode">Watch Mode</h2>
+          <p>Use watch mode for automatic recompilation during development:</p>
+          <pre><code><span class="comment"># Watch a directory</span>
+gherkin watch features/
+
+<span class="comment"># Or use the start command (compile + watch)</span>
+gherkin start</code></pre>
+
+          <p>The watcher will:</p>
+          <ul>
+            <li>Monitor for file changes (add, modify, delete)</li>
+            <li>Automatically recompile affected files</li>
+            <li>Respect dependency order</li>
+            <li>Show compilation status in real-time</li>
+          </ul>
+
+          <div class="alert alert-info">
+            <strong>Tip:</strong> Press <code>Ctrl+C</code> to stop the watcher and see a summary of compiled files.
+          </div>
+
+          <h2 id="next-steps">Next Steps</h2>
+          <div class="card-grid">
+            <a href="language.html" class="card">
+              <h3>Learn the Language</h3>
+              <p>Master GherkinLang syntax: imports, state management, and more.</p>
+            </a>
+            <a href="cli.html" class="card">
+              <h3>CLI Reference</h3>
+              <p>Explore all available commands and options.</p>
+            </a>
+            <a href="templates.html" class="card">
+              <h3>Project Templates</h3>
+              <p>See detailed breakdowns of each template.</p>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2024 GherkinLang. MIT License.</p>
+      <p><a href="https://github.com/duncannevin/gherkinlang-js">GitHub</a></p>
+    </div>
+  </footer>
+</body>
+</html>
